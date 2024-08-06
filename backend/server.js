@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 require('dotenv').config();
 const connectDB = require('./dbConfig');
+const userRoutes = require('./Routes/userRoutes');
 
 const app = express();
 
@@ -14,10 +15,11 @@ app.use(express.json());
 
 app.use(cors());
 app.use(cors({
-  origin: 'http://localhost:3000'
+  origin: 'http://localhost:5173'
 }));
 
-
 connectDB();
+
+app.use('/api/users', userRoutes);
 
 app.listen(PORT, () => console.log(`Server is running on Port ${PORT}`));
