@@ -219,46 +219,49 @@ function RegisterUserForm() {
                 </FormControl>
 
                 {formData.role === 'Student' && (
-                    <>
-                        <FormControl fullWidth margin="normal">
-                            <InputLabel id="department-group-label">Department Group</InputLabel>
-                            <Select
-                                labelId="department-group-label"
-                                id="department-group"
-                                name="department"
-                                required
-                                value={formData.details.department}
-                                onChange={handleChange}
-                                label="Department Group"
-                            >
-                                {departments.map((department) => (
-                                    <MenuItem key={department._id} value={department._id}>
-                                        {department.department}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
+    <>
+        {/* Dropdown for Department */}
+        <FormControl fullWidth margin="normal">
+            <InputLabel id="department-group-label">Department Group</InputLabel>
+            <Select
+                labelId="department-group-label"
+                id="department-group"
+                name="department"
+                required
+                value={formData.details.department}
+                onChange={handleChange}
+                label="Department Group"
+            >
+                {departments.map((department) => (
+                    <MenuItem key={department._id} value={department._id}>
+                        {department.department}
+                    </MenuItem>
+                ))}
+            </Select>
+        </FormControl>
 
-                        <FormControl fullWidth margin="normal">
-                            <InputLabel id="batch-group-label">Batch Group</InputLabel>
-                            <Select
-                                labelId="batch-group-label"
-                                id="batch-group"
-                                name="batch"
-                                required
-                                value={formData.details.batch}
-                                onChange={handleChange}
-                                label="Batch Group"
-                            >
-                                {batches.map((batch) => (
-                                    <MenuItem key={batch._id} value={batch._id}>
-                                        {batch.batch}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </>
-                )}
+        {/* Dropdown for Batch */}
+        <FormControl fullWidth margin="normal">
+            <InputLabel id="batch-group-label">Batch Group</InputLabel>
+            <Select
+                labelId="batch-group-label"
+                id="batch-group"
+                name="batch"
+                required
+                value={formData.details.batch}
+                onChange={handleChange}
+                label="Batch Group"
+            >
+                {batches.map((batch) => (
+                    <MenuItem key={batch._id} value={batch._id}>
+                        {batch.batch}
+                    </MenuItem>
+                ))}
+            </Select>
+        </FormControl>
+    </>
+)}
+
 
                 <Box sx={{ alignSelf: 'flex-end', width: '100%' }}>
                     <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
