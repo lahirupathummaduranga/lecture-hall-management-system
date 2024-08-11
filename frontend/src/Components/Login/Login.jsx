@@ -10,6 +10,8 @@ import {
   Link,
   Paper,
 } from '@mui/material';
+import logo from '../../assets/logo.png';
+
 
 const Login = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState('');
@@ -61,7 +63,7 @@ const Login = ({ onLoginSuccess }) => {
           padding: 4,
         }}
       >
-        <img src="../../assets/jpr-logo.png" alt="Logo" style={{ width: '120px', marginBottom: '20px' }}/>
+        <img src={logo} alt="Logo" style={{ width: '280px', marginBottom: '30px' }} />
         <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', textAlign: 'center' }}>
           Welcome to Lecture Hall Management System
         </Typography>
