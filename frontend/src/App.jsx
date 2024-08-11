@@ -3,8 +3,7 @@ import './App.css';
 import AdminPage from './Pages/AdminPage';
 import Student from './Pages/Student';
 import HallAttendant from './Pages/HallAttendant';
-import Lecture from './Pages/Lecture'; // Ensure this path is correct
-
+import Lecture from './Pages/Lecture'; 
 import Login from './Components/Login/Login';
 import axios from 'axios';
 
