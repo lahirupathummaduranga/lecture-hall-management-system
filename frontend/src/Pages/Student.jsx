@@ -11,7 +11,7 @@ function Student({ userDetails, onLogout }) {
       <ProfileAndDateTime userDetails={userDetails} />
       <div>
       <h1>Welcome, {userDetails.name}</h1>
-      <p>You are logged in as a Student.</p>
+      <p>You are logghffnhhced in as a Student.</p>
       <div></div>
       <div></div>
       <div></div>
