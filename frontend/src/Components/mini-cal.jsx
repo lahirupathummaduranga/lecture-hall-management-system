@@ -64,15 +64,20 @@ const Schedule = () => {
     };
 
     return (
-        <div style={{ width: '300px', height: '60vh', padding: '10px', boxSizing: 'border-box' }}>
-            <Calendar
-                localizer={localizer}
-                events={events}
-                startAccessor="start"
-                endAccessor="end"
-                style={{ height: '100%', width: '100%' }}
-                eventPropGetter={eventStyleGetter}
-            />
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '20px', boxSizing: 'border-box' }}>
+            <div style={{ flex: '1' }}>
+                {/* Other content can go here */}
+            </div>
+            <div style={{ width: '400px', height: '400px' }}>
+                <Calendar
+                    localizer={localizer}
+                    events={events}
+                    startAccessor="start"
+                    endAccessor="end"
+                    style={{ height: '100%', width: '100%' }}
+                    eventPropGetter={eventStyleGetter}
+                />
+            </div>
         </div>
     );
 };

@@ -2,6 +2,7 @@
 import React from 'react';
 import NavBar from '../Components/Header/NavBar';
 import ProfileAndDateTime from '../Components/ProfileAndDateTime/ProfileAndDateTime';
+import Mini from '../Components/mini-cal';
 
 import Footer from '../Components/Footer/MainFooterComponent';
 
@@ -12,11 +13,12 @@ function HallAttendant({ userDetails, onLogout }) {
         <ProfileAndDateTime userDetails={userDetails} />
         <div>
         <h1>Welcome, {userDetails.name}</h1>
-        <p>You are logged in as a Hall Attend.</p>
+        <p>You are logged in as a Hall Attend.</p><Mini/>
         <div></div>
         <div></div>
         <div></div>
       </div>
+      
         <Footer />
       </div>
     );

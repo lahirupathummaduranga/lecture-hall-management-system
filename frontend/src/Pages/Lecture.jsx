@@ -1,7 +1,7 @@
 import React from 'react';
 import NavBar from '../Components/Header/NavBar';
 import ProfileAndDateTime from '../Components/ProfileAndDateTime/ProfileAndDateTime';
-import Scheduled from '../Components/mini-cal';
+import Scheduled from '../Components/Schedule';
 
 import Footer from '../Components/Footer/MainFooterComponent';
 
