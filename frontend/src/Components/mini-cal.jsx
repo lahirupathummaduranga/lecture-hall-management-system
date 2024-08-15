@@ -64,21 +64,34 @@ const Schedule = () => {
     };
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '20px', boxSizing: 'border-box' }}>
-            <div style={{ flex: '1' }}>
-                {/* Other content can go here */}
-            </div>
-            <div style={{ width: '400px', height: '400px' }}>
-                <Calendar
-                    localizer={localizer}
-                    events={events}
-                    startAccessor="start"
-                    endAccessor="end"
-                    style={{ height: '100%', width: '100%' }}
-                    eventPropGetter={eventStyleGetter}
-                />
-            </div>
+        <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          paddingBottom: 10,
+          paddingRight:50,
+          boxSizing: 'border-box',
+          position: 'absolute', // Makes the element stay at the top
+          top: 200, // Positions it at the top of the page
+          width: '100%', // Ensures the div spans the full width of the page
+          paddingTop: 20, // Optional: Adds some space from the top of the page
+        }}
+      >
+        <div style={{ flex: '1' }}>
+          {/* Other content can go here */}
         </div>
+        <div style={{ width: '400px', height: '400px' }}>
+          <Calendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            style={{ height: '100%', width: '100%' }}
+            eventPropGetter={eventStyleGetter}
+          />
+        </div>
+      </div>
+      
     );
 };
 
