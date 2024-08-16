@@ -5,16 +5,29 @@ import Footer from '../Components/Footer/MainFooterComponent';
 import { Box, Button, IconButton, Typography, Stack } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import Mini from '../Components/mini-cal';
+import Mini from '../Components/mini-cal'; // Ensure Mini is correctly imported
 
 function Student({ userDetails, onLogout }) {
+  const handleViewClick = (item) => {
+    console.log(`View button clicked for Task ${item}`);
+    // Uncomment for debugging
+    // alert(`View button clicked for Task ${item}`);
+  };
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '80vh' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <NavBar onLogout={onLogout} />
       <ProfileAndDateTime userDetails={userDetails} />
 
-      {/* Main Content Box */}
-      <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-start', padding: '16px' }}>
+      <div style={{ flex: 1, padding: '16px' }}>
+        <Typography variant="h4" sx={{ marginBottom: '16px' }}>
+          Welcome, {userDetails.name}
+        </Typography>
+        <Typography variant="body1" sx={{ marginBottom: '32px' }}>
+          You are logged in as a Student.
+        </Typography>
+
+        {/* Main Content Box */}
         <Box
           sx={{
             padding: '16px',
@@ -23,6 +36,7 @@ function Student({ userDetails, onLogout }) {
             width: '100%',
             maxWidth: '800px',
             backgroundColor: '#f9f9f9',
+            marginBottom: '16px',
           }}
         >
           <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -37,7 +51,7 @@ function Student({ userDetails, onLogout }) {
 
           <Stack spacing={2} sx={{ marginTop: '16px' }}>
             {/* List items with View buttons */}
-            {[1, 2, 3, 4, 5].map((item, index) => (
+            {[1, 2, 3, 4].map((item, index) => (
               <Stack
                 key={index}
                 direction="row"
@@ -50,16 +64,22 @@ function Student({ userDetails, onLogout }) {
                 }}
               >
                 <Typography variant="body1">Task {item}</Typography>
-                <Button variant="contained" sx={{ backgroundColor: '#64b5f6' }}>
+                <Button
+                  variant="contained"
+                  sx={{ backgroundColor: '#64b5f6' }}
+                  onClick={() => handleViewClick(item)}
+                >
                   View
                 </Button>
               </Stack>
             ))}
           </Stack>
         </Box>
+
+        {/* Mini Component */}
+        <Mini />
       </div>
-      
-      <Mini />
+
       <Footer />
     </div>
   );
