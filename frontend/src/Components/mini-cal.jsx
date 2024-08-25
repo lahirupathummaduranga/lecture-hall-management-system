@@ -65,33 +65,32 @@ const Schedule = () => {
 
     return (
         <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          paddingBottom: 10,
-          paddingRight:50,
-          boxSizing: 'border-box',
-          position: 'absolute', // Makes the element stay at the top
-          top: 200, // Positions it at the top of the page
-          width: '100%', // Ensures the div spans the full width of the page
-          paddingTop: 20, // Optional: Adds some space from the top of the page
-        }}
-      >
-        <div style={{ flex: '1' }}>
-          {/* Other content can go here */}
+            style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                paddingBottom: 10,
+                paddingRight: 50,
+                boxSizing: 'border-box',
+                position: 'absolute', // Keep the element positioned absolutely
+                bottom: 20, // Position it at the bottom of the page
+                right: 20, // Position it on the right side
+                width: 'auto', // Set width to auto to avoid stretching
+            }}
+        >
+            <div style={{ flex: '1' }}>
+                {/* Other content can go here */}
+            </div>
+            <div style={{ width: '400px', height: '400px' }}>
+                <Calendar
+                    localizer={localizer}
+                    events={events}
+                    startAccessor="start"
+                    endAccessor="end"
+                    style={{ height: '100%', width: '100%' }}
+                    eventPropGetter={eventStyleGetter}
+                />
+            </div>
         </div>
-        <div style={{ width: '400px', height: '400px' }}>
-          <Calendar
-            localizer={localizer}
-            events={events}
-            startAccessor="start"
-            endAccessor="end"
-            style={{ height: '100%', width: '100%' }}
-            eventPropGetter={eventStyleGetter}
-          />
-        </div>
-      </div>
-      
     );
 };
 

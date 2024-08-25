@@ -1,17 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import NavBar from '../Components/Header/NavBar';
 import ProfileAndDateTime from '../Components/ProfileAndDateTime/ProfileAndDateTime';
 import Footer from '../Components/Footer/MainFooterComponent';
-import { Box, Button, IconButton, Typography, Stack } from '@mui/material';
+import { Box, Button, IconButton, Typography, Stack, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Mini from '../Components/mini-cal'; // Ensure Mini is correctly imported
 
 function Student({ userDetails, onLogout }) {
-  const handleViewClick = (item) => {
-    console.log(`View button clicked for Task ${item}`);
-    // Uncomment for debugging
-    // alert(`View button clicked for Task ${item}`);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
+
+  const handleClickOpen = (task) => {
+    setSelectedTask(task);
+    setOpenDialog(true);
+  };
+
+  const handleClose = () => {
+    setOpenDialog(false);
+  };
+
+  const renderTaskDetails = (task) => {
+    switch (task) {
+      case 1:
+        return "Details for Task 1: Submit the assignment by 5 PM.";
+      case 2:
+        return "Details for Task 2: Attend the group study session at 3 PM.";
+      case 3:
+        return "Details for Task 3: Complete the online quiz before midnight.";
+      case 4:
+        return "Details for Task 4: Review lecture notes for tomorrow's class.";
+      default:
+        return "No details available.";
+    }
   };
 
   return (
@@ -19,15 +40,18 @@ function Student({ userDetails, onLogout }) {
       <NavBar onLogout={onLogout} />
       <ProfileAndDateTime userDetails={userDetails} />
 
-      <div style={{ flex: 1, padding: '16px' }}>
+      {/* Welcome message */}
+      <div style={{ padding: '16px' }}>
         <Typography variant="h4" sx={{ marginBottom: '16px' }}>
           Welcome, {userDetails.name}
         </Typography>
         <Typography variant="body1" sx={{ marginBottom: '32px' }}>
           You are logged in as a Student.
         </Typography>
+      </div>
 
-        {/* Main Content Box */}
+      {/* Main Content Box moved to the bottom */}
+      <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-end', padding: '16px', marginTop: 'auto' }}>
         <Box
           sx={{
             padding: '16px',
@@ -36,7 +60,6 @@ function Student({ userDetails, onLogout }) {
             width: '100%',
             maxWidth: '800px',
             backgroundColor: '#f9f9f9',
-            marginBottom: '16px',
           }}
         >
           <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -51,9 +74,9 @@ function Student({ userDetails, onLogout }) {
 
           <Stack spacing={2} sx={{ marginTop: '16px' }}>
             {/* List items with View buttons */}
-            {[1, 2, 3, 4].map((item, index) => (
+            {[1, 2, 3, 4].map((item) => (
               <Stack
-                key={index}
+                key={item}
                 direction="row"
                 justifyContent="space-between"
                 alignItems="center"
@@ -66,8 +89,15 @@ function Student({ userDetails, onLogout }) {
                 <Typography variant="body1">Task {item}</Typography>
                 <Button
                   variant="contained"
-                  sx={{ backgroundColor: '#64b5f6' }}
-                  onClick={() => handleViewClick(item)}
+                  sx={{
+                    backgroundColor: '#64b5f6',
+                    '&:hover': {
+                      backgroundColor: '#42a5f5', // Color on hover
+                      transform: 'scale(1.05)', // Scale effect on hover
+                    },
+                    transition: 'background-color 0.3s, transform 0.3s', // Smooth transition
+                  }}
+                  onClick={() => handleClickOpen(item)}
                 >
                   View
                 </Button>
@@ -75,12 +105,27 @@ function Student({ userDetails, onLogout }) {
             ))}
           </Stack>
         </Box>
-
-        {/* Mini Component */}
-        <Mini />
       </div>
 
+      {/* Mini Component */}
+      <Mini />
+
       <Footer />
+
+      {/* Dialog for Task Details */}
+      <Dialog open={openDialog} onClose={handleClose}>
+        <DialogTitle>Task Details</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">
+            {selectedTask !== null ? renderTaskDetails(selectedTask) : "No task selected."}
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
