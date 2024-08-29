@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createTheme } from '@mui/material/styles';
 import './App.css';
 import AdminPage from './Pages/AdminPage';
 import Student from './Pages/Student';
@@ -10,8 +11,8 @@ import axios from 'axios';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userDetails, setUserDetails] = useState(null);
-  const [loading, setLoading] = useState(true); // New state for loading status
-  const [error, setError] = useState(null); // New state for error handling
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -20,8 +21,6 @@ function App() {
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user'));
         if (token && user) {
-          // Optionally, you can verify the token with your backend
-          // await axios.post('http://localhost:3000/api/auth/verify', { token });
           setIsAuthenticated(true);
           setUserDetails(user);
         }
@@ -39,6 +38,8 @@ function App() {
   const handleLoginSuccess = (user) => {
     setIsAuthenticated(true);
     setUserDetails(user);
+    localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('token', user.token);
   };
 
   const handleLogout = async () => {
@@ -56,29 +57,29 @@ function App() {
 
   const renderPage = () => {
     if (loading) {
-      return <div>Loading...</div>; // Show loading indicator while fetching user details
+      return <div>Loading...</div>;
     }
 
     if (error) {
-      return <div>{error}</div>; // Show error message if there's an error
+      return <div>{error}</div>;
     }
 
     if (!isAuthenticated) {
       return <Login onLoginSuccess={handleLoginSuccess} />;
     }
 
-    if (userDetails.role === 'Admin') {
-      return <AdminPage userDetails={userDetails} onLogout={handleLogout} />;
-    } else if (userDetails.role === 'Student') {
-      return <Student userDetails={userDetails} onLogout={handleLogout} />;
-    } else if (userDetails.role === 'Non-Academic') {
-      return <HallAttendant userDetails={userDetails} onLogout={handleLogout} />;
-    } else if (userDetails.role === 'Lecturer') {
-      return <Lecture userDetails={userDetails} onLogout={handleLogout} />;
-    } 
-    
-
-    return <div>Unauthorized</div>;
+    switch (userDetails.role) {
+      case 'Admin':
+        return <AdminPage userDetails={userDetails} onLogout={handleLogout} />;
+      case 'Student':
+        return <Student userDetails={userDetails} onLogout={handleLogout} />;
+      case 'Non-Academic':
+        return <HallAttendant userDetails={userDetails} onLogout={handleLogout} />;
+      case 'Lecturer':
+        return <Lecture userDetails={userDetails} onLogout={handleLogout} />;
+      default:
+        return <div>Unauthorized</div>;
+    }
   };
 
   return (
