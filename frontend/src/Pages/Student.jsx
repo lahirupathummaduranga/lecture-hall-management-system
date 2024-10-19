@@ -7,9 +7,12 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Mini from '../Components/mini-cal'; // Ensure Mini is correctly imported
 
+const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+
 function Student({ userDetails, onLogout }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
+  const [currentDayIndex, setCurrentDayIndex] = useState(0); // Start with Monday (index 0)
 
   const handleClickOpen = (task) => {
     setSelectedTask(task);
@@ -33,6 +36,14 @@ function Student({ userDetails, onLogout }) {
       default:
         return "No details available.";
     }
+  };
+
+  const handleNextDay = () => {
+    setCurrentDayIndex((prevIndex) => (prevIndex + 1) % weekdays.length); // Loop between Monday to Friday
+  };
+
+  const handlePreviousDay = () => {
+    setCurrentDayIndex((prevIndex) => (prevIndex - 1 + weekdays.length) % weekdays.length); // Loop back from Monday to Friday
   };
 
   return (
@@ -63,11 +74,11 @@ function Student({ userDetails, onLogout }) {
           }}
         >
           <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <IconButton>
+            <IconButton onClick={handlePreviousDay}>
               <ArrowBackIcon />
             </IconButton>
-            <Typography variant="h6">Today</Typography>
-            <IconButton>
+            <Typography variant="h6">{weekdays[currentDayIndex]}</Typography>
+            <IconButton onClick={handleNextDay}>
               <ArrowForwardIcon />
             </IconButton>
           </Stack>
