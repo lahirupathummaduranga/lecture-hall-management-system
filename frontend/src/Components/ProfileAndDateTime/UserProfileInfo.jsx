@@ -10,7 +10,7 @@ const UserProfileInfo = ({ userDetails }) => (
             {'Faculty of Technology'}
         </Typography>
         <Typography variant="caption" sx={{ fontSize: '0.75rem' }}>
-            {'Department of Computer Science'}
+            {'Department of Information and Communication Technology'}
         </Typography>
     </Box>
 );
