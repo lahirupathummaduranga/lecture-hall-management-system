@@ -58,27 +58,28 @@ const Login = ({ onLoginSuccess }) => {
       <Grid
         container
         component="main"
-        sx={{ height: '100vh' }}
+        sx={{ height: '100vh', backgroundColor: '#f0f4f8' }} // Light background
       >
-        {/* Left Side */}
+        {/* Left Side - Logo and Welcome Text */}
         <Grid
           item
           xs={12}
           md={6}
           sx={{
-            backgroundColor: '#d1e7ff',
+            background: 'linear-gradient(to bottom, #131842, #243f82)', // Gradient background for the left side
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             padding: 4,
+            color: '#fff',
           }}
         >
-          <img src={logo} alt="Logo" style={{ width: '280px', marginBottom: '30px' }} />
-          <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', textAlign: 'center' }}>
+          <img src={logo} alt="Logo" style={{ width: '240px', marginBottom: '20px' }} />
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', textAlign: 'center' }}>
             Welcome to Lecture Hall Management System
           </Typography>
-          <Typography variant="body1" align="center" sx={{ maxWidth: '300px' }}>
+          <Typography variant="body1" align="center" sx={{ maxWidth: '300px', marginBottom: '20px' }}>
             A comprehensive solution designed to streamline and enhance the
             management of lecture halls and academic spaces. Whether you're a
             faculty member, administrator, or student, our system is tailored
@@ -86,7 +87,7 @@ const Login = ({ onLoginSuccess }) => {
           </Typography>
         </Grid>
 
-        {/* Right Side */}
+        {/* Right Side - Login Form */}
         <Grid
           item
           xs={12}
@@ -99,11 +100,13 @@ const Login = ({ onLoginSuccess }) => {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: 4,
-            borderRadius: '0px 20px 20px 0px', // Ensure rounded corners on right side only
+            padding: 6,
+            borderRadius: '0px 20px 20px 0px',
+            backgroundColor: '#ffffff',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', // Subtle shadow for depth
           }}
         >
-          <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold' }}>
+          <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
             Sign In To Your Account
           </Typography>
           <Box component="form" onSubmit={handleLogin} sx={{ mt: 1, width: '100%', maxWidth: '400px' }}>
@@ -119,7 +122,10 @@ const Login = ({ onLoginSuccess }) => {
               autoFocus
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              sx={{ backgroundColor: '#f5f5f5', borderRadius: '4px' }}
+              sx={{
+                backgroundColor: '#f9f9f9',
+                borderRadius: '8px',
+              }}
             />
             <TextField
               variant="outlined"
@@ -133,10 +139,13 @@ const Login = ({ onLoginSuccess }) => {
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              sx={{ backgroundColor: '#f5f5f5', borderRadius: '4px' }}
+              sx={{
+                backgroundColor: '#f9f9f9',
+                borderRadius: '8px',
+              }}
             />
             {error && (
-              <Typography color="error" variant="body2">
+              <Typography color="error" variant="body2" sx={{ marginTop: '8px' }}>
                 {error}
               </Typography>
             )}
@@ -148,23 +157,25 @@ const Login = ({ onLoginSuccess }) => {
               sx={{
                 mt: 3,
                 mb: 2,
-                backgroundColor: '#333',
+                backgroundColor: '#131842',
                 color: '#fff',
-                '&:hover': { backgroundColor: '#555' },
+                '&:hover': { backgroundColor: '#243f82' },
                 textTransform: 'none',
-                borderRadius: '20px',
+                borderRadius: '30px',
+                padding: '10px 0',
+                fontWeight: 'bold',
               }}
             >
               {loading ? 'Loading...' : 'Login'}
             </Button>
             <Grid container justifyContent="space-between">
               <Grid item>
-                <Link href="#" variant="body2" sx={{ color: '#333' }} onClick={handleDialogOpen}>
+                <Link href="#" variant="body2" sx={{ color: '#131842' }} onClick={handleDialogOpen}>
                   Forgot password?
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2" sx={{ color: '#333' }} onClick={handlePrivacyDialogOpen}>
+                <Link href="#" variant="body2" sx={{ color: '#131842' }} onClick={handlePrivacyDialogOpen}>
                   Privacy policy
                 </Link>
               </Grid>
@@ -189,7 +200,7 @@ const Login = ({ onLoginSuccess }) => {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDialogClose} variant="contained" color="primary">
+          <Button onClick={handleDialogClose} variant="contained" sx={{ backgroundColor: '#131842', color: '#fff' }}>
             Close
           </Button>
         </DialogActions>
@@ -207,27 +218,19 @@ const Login = ({ onLoginSuccess }) => {
         </DialogTitle>
         <DialogContent>
           <Typography variant="body1" sx={{ textAlign: 'left', whiteSpace: 'pre-line' }}>
-            1.This privacy policy explains how we collect, use, and protect your personal information when using our Lecture Hall Management System.<br></br>
-
-            2.We collect personal information such as email addresses and passwords necessary for account creation and authentication. <br></br>
-
-            3.Your data is used to provide and improve the service, manage user accounts, and communicate with users regarding system updates and support.<br></br>
-
-            4.We implement security measures to protect your data from unauthorized access, alteration, or disclosure. <br></br>
-
-            5.We do not share your personal information with third parties except as required by law or to provide the service.<br></br>
-
-            6.You have the right to access, correct, or delete your personal data. Please contact us if you wish to exercise these rights.,<br></br>
-
-            7.We may update this policy from time to time. We will notify you of any significant changes.<br></br>
-
-            8.If you have any questions about this privacy policy, please contact us at [contact@example.com].<br></br>
-
+            1. This privacy policy explains how we collect, use, and protect your personal information when using our Lecture Hall Management System.<br></br>
+            2. We collect personal information such as email addresses and passwords necessary for account creation and authentication. <br></br>
+            3. Your data is used to provide and improve the service, manage user accounts, and communicate with users regarding system updates and support.<br></br>
+            4. We implement security measures to protect your data from unauthorized access, alteration, or disclosure. <br></br>
+            5. We do not share your personal information with third parties except as required by law or to provide the service.<br></br>
+            6. You have the right to access, correct, or delete your personal data. Please contact us if you wish to exercise these rights.<br></br>
+            7. We may update this policy from time to time. We will notify you of any significant changes.<br></br>
+            8. If you have any questions about this privacy policy, please contact us at [contact@example.com].<br></br>
             Thank you for using our system.
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handlePrivacyDialogClose} variant="contained" color="primary">
+          <Button onClick={handlePrivacyDialogClose} variant="contained" sx={{ backgroundColor: '#131842', color: '#fff' }}>
             Close
           </Button>
         </DialogActions>
