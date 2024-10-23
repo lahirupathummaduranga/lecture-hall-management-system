@@ -14,14 +14,15 @@ const CurrentTimeDisplay = () => {
     const timeString = currentTime.toLocaleTimeString('en-US', {
         hour: '2-digit',
         minute: '2-digit',
-        hour12: false
+        hour12: true
     });
 
-    const dateString = currentTime.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
+    const dateString = currentTime.toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
         year: 'numeric'
-    }).replace(/\//g, ' - ');
+    });
 
     return (
         <Box>
