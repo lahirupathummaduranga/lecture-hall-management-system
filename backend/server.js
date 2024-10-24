@@ -11,6 +11,7 @@ const lectureHallRoutes = require('./routes/lectureHallRoutes');
 const batchRoutes = require('./routes/batchRoutes');
 const departmentRoutes = require('./routes/departmentRoutes');
 
+const issueRoutes = require('./routes/issueRoutes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -32,7 +33,7 @@ const storage = multer.diskStorage({
 const upload = multer({
     storage: storage,
     limits: { fileSize: 1000000 },
-    fileFilter: function(req, file, cb){
+    fileFilter: function(req, file, cb) {
         const filetypes = /jpeg|jpg|png|gif/;
         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
         const mimetype = filetypes.test(file.mimetype);
@@ -56,6 +57,7 @@ app.use('/api', scheduleRoutes);
 app.use('/api', lectureHallRoutes);
 app.use('/api', batchRoutes);
 app.use('/api', departmentRoutes);
+app.use('/api', issueRoutes);
 
 connectDB();
 
