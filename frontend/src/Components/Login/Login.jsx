@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
   TextField,
@@ -12,7 +12,12 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  CircularProgress,
+  Snackbar,
+  InputAdornment,
+  IconButton,
 } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import logo from '../../assets/logo.png';
 
 const Login = ({ onLoginSuccess }) => {
@@ -22,9 +27,24 @@ const Login = ({ onLoginSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false); // State for forgot password dialog
   const [privacyDialogOpen, setPrivacyDialogOpen] = useState(false); // State for privacy policy dialog
+  const [pageLoading, setPageLoading] = useState(true); // State for page loading effect
+  const [showPassword, setShowPassword] = useState(false); // Password visibility toggle
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // Snackbar state
+
+  // Simulate page loading delay
+  useEffect(() => {
+    setTimeout(() => {
+      setPageLoading(false); // Page has finished loading
+    }, 2000); // Delay for 2 seconds to simulate loading effect
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
@@ -33,13 +53,13 @@ const Login = ({ onLoginSuccess }) => {
         email,
         password,
       });
-      alert('Logged in successfully!');
       const { token, user } = response.data;
 
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
 
       onLoginSuccess(user);
+      setSnackbarOpen(true); // Show success feedback
     } catch (err) {
       setError(err.response?.data?.message || 'Error during authentication');
     } finally {
@@ -47,12 +67,31 @@ const Login = ({ onLoginSuccess }) => {
     }
   };
 
-  const handleDialogOpen = () => setDialogOpen(true);  // Function to open forgot password dialog
+  const handleDialogOpen = () => setDialogOpen(true); // Function to open forgot password dialog
   const handleDialogClose = () => setDialogOpen(false); // Function to close forgot password dialog
 
   const handlePrivacyDialogOpen = () => setPrivacyDialogOpen(true); // Function to open privacy policy dialog
   const handlePrivacyDialogClose = () => setPrivacyDialogOpen(false); // Function to close privacy policy dialog
 
+  const togglePasswordVisibility = () => setShowPassword(!showPassword); // Toggle password visibility
+
+  const handleSnackbarClose = () => setSnackbarOpen(false); // Close snackbar
+
+  // If the page is still loading, show the loading spinner
+  if (pageLoading) {
+    return (
+      <Grid
+        container
+        justifyContent="center"
+        alignItems="center"
+        sx={{ height: '100vh', backgroundColor: '#f0f4f8' }}
+      >
+        <CircularProgress size={60} sx={{ color: '#131842' }} />
+      </Grid>
+    );
+  }
+
+  // Once loading is done, render the main content
   return (
     <>
       <Grid
@@ -104,6 +143,9 @@ const Login = ({ onLoginSuccess }) => {
             borderRadius: '0px 20px 20px 0px',
             backgroundColor: '#ffffff',
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', // Subtle shadow for depth
+            '@media (max-width:600px)': {
+              borderRadius: '0px', // Remove rounded corners for smaller devices
+            },
           }}
         >
           <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
@@ -134,7 +176,7 @@ const Login = ({ onLoginSuccess }) => {
               fullWidth
               name="password"
               label="Password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               id="password"
               autoComplete="current-password"
               value={password}
@@ -142,6 +184,15 @@ const Login = ({ onLoginSuccess }) => {
               sx={{
                 backgroundColor: '#f9f9f9',
                 borderRadius: '8px',
+              }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={togglePasswordVisibility} edge="end">
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
               }}
             />
             {error && (
@@ -164,9 +215,10 @@ const Login = ({ onLoginSuccess }) => {
                 borderRadius: '30px',
                 padding: '10px 0',
                 fontWeight: 'bold',
+                position: 'relative',
               }}
             >
-              {loading ? 'Loading...' : 'Login'}
+              {loading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'Login'}
             </Button>
             <Grid container justifyContent="space-between">
               <Grid item>
@@ -183,6 +235,14 @@ const Login = ({ onLoginSuccess }) => {
           </Box>
         </Grid>
       </Grid>
+
+      {/* Snackbar for Success Message */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        message="Login successful!"
+      />
 
       {/* Dialog for Forgot Password */}
       <Dialog
@@ -218,14 +278,14 @@ const Login = ({ onLoginSuccess }) => {
         </DialogTitle>
         <DialogContent>
           <Typography variant="body1" sx={{ textAlign: 'left', whiteSpace: 'pre-line' }}>
-            1. This privacy policy explains how we collect, use, and protect your personal information when using our Lecture Hall Management System.<br></br>
-            2. We collect personal information such as email addresses and passwords necessary for account creation and authentication. <br></br>
-            3. Your data is used to provide and improve the service, manage user accounts, and communicate with users regarding system updates and support.<br></br>
-            4. We implement security measures to protect your data from unauthorized access, alteration, or disclosure. <br></br>
-            5. We do not share your personal information with third parties except as required by law or to provide the service.<br></br>
-            6. You have the right to access, correct, or delete your personal data. Please contact us if you wish to exercise these rights.<br></br>
-            7. We may update this policy from time to time. We will notify you of any significant changes.<br></br>
-            8. If you have any questions about this privacy policy, please contact us at [contact@example.com].<br></br>
+            1. This privacy policy explains how we collect, use, and protect your personal information when using our Lecture Hall Management System.
+            2. We collect personal information such as email addresses and passwords necessary for account creation and authentication.
+            3. Your data is used to provide and improve the service, manage user accounts, and communicate with users regarding system updates and support.
+            4. We implement security measures to protect your data from unauthorized access, alteration, or disclosure.
+            5. We do not share your personal information with third parties except as required by law or to provide the service.
+            6. You have the right to access, correct, or delete your personal data. Please contact us if you wish to exercise these rights.
+            7. We may update this policy from time to time. We will notify you of any significant changes.
+            8. If you have any questions about this privacy policy, please contact us at [contact@example.com].
             Thank you for using our system.
           </Typography>
         </DialogContent>
