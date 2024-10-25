@@ -1,18 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import NavBar from '../Components/Header/NavBar';
 import ProfileAndDateTime from '../Components/ProfileAndDateTime/ProfileAndDateTime';
 import Footer from '../Components/Footer/MainFooterComponent';
 import { Box, Button, IconButton, Typography, Stack, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import Mini from '../Components/mini-cal'; // Ensure Mini is correctly imported
+import Mini from '../Components/mini-cal';
 
 const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
 function Student({ userDetails, onLogout }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
-  const [currentDayIndex, setCurrentDayIndex] = useState(0); // Start with Monday (index 0)
+
+  // Set initial day based on the current day of the week
+  const getCurrentDayIndex = () => {
+    const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    // Map Sunday (0) and Saturday (6) to Monday (index 0) if needed
+    return today >= 1 && today <= 5 ? today - 1 : 0; // Map Monday-Friday to 0-4
+  };
+
+  const [currentDayIndex, setCurrentDayIndex] = useState(getCurrentDayIndex);
 
   const handleClickOpen = (task) => {
     setSelectedTask(task);
@@ -51,7 +59,6 @@ function Student({ userDetails, onLogout }) {
       <NavBar onLogout={onLogout} />
       <ProfileAndDateTime userDetails={userDetails} />
 
-      {/* Welcome message */}
       <div style={{ padding: '16px' }}>
         <Typography variant="h4" sx={{ marginBottom: '16px' }}>
           Welcome, {userDetails.name}
@@ -61,7 +68,6 @@ function Student({ userDetails, onLogout }) {
         </Typography>
       </div>
 
-      {/* Main Content Box moved to the bottom */}
       <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-end', padding: '16px', marginTop: 'auto' }}>
         <Box
           sx={{
@@ -84,7 +90,6 @@ function Student({ userDetails, onLogout }) {
           </Stack>
 
           <Stack spacing={2} sx={{ marginTop: '16px' }}>
-            {/* List items with View buttons */}
             {[1, 2, 3, 4].map((item) => (
               <Stack
                 key={item}
@@ -103,10 +108,10 @@ function Student({ userDetails, onLogout }) {
                   sx={{
                     backgroundColor: '#64b5f6',
                     '&:hover': {
-                      backgroundColor: '#42a5f5', // Color on hover
-                      transform: 'scale(1.05)', // Scale effect on hover
+                      backgroundColor: '#42a5f5',
+                      transform: 'scale(1.05)',
                     },
-                    transition: 'background-color 0.3s, transform 0.3s', // Smooth transition
+                    transition: 'background-color 0.3s, transform 0.3s',
                   }}
                   onClick={() => handleClickOpen(item)}
                 >
@@ -118,12 +123,10 @@ function Student({ userDetails, onLogout }) {
         </Box>
       </div>
 
-      {/* Mini Component */}
       <Mini />
 
       <Footer />
 
-      {/* Dialog for Task Details */}
       <Dialog open={openDialog} onClose={handleClose}>
         <DialogTitle>Task Details</DialogTitle>
         <DialogContent>

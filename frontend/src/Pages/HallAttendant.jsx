@@ -15,6 +15,9 @@ function HallAttendant({ userDetails, onLogout }) {
   const [selectedTask, setSelectedTask] = useState(null);
   const [openIssuesDialog, setOpenIssuesDialog] = useState(false); 
   const [issues, setIssues] = useState([]); // State to store fetched issues
+  const [currentDayIndex, setCurrentDayIndex] = useState(4); // Start on Friday (index 4)
+
+  const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
   // Fetch issues from the backend
   useEffect(() => {
@@ -48,6 +51,29 @@ function HallAttendant({ userDetails, onLogout }) {
     setOpenIssuesDialog(false); // Close the issues dialog
   };
 
+  // Function to get the current day name based on index
+  const getCurrentDay = () => {
+    return weekdays[currentDayIndex];
+  };
+
+  // Handlers for Next and Previous buttons
+  const handleNextDay = () => {
+    // Cycle back to Monday after Friday
+    if (currentDayIndex === weekdays.length - 1) {
+      setCurrentDayIndex(0); // Go to Monday
+    } else {
+      setCurrentDayIndex(currentDayIndex + 1); // Go to next day
+    }
+  };
+
+  const handlePreviousDay = () => {
+    if (currentDayIndex === 0) {
+      setCurrentDayIndex(weekdays.length - 1); // Go to Friday
+    } else {
+      setCurrentDayIndex(currentDayIndex - 1); // Go to previous day
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <NavBar onLogout={onLogout} />
@@ -61,11 +87,11 @@ function HallAttendant({ userDetails, onLogout }) {
       <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-end', padding: '16px', marginTop: 'auto' }}>
         <Box sx={{ padding: '16px', border: '1px solid #e0e0e0', borderRadius: '8px', width: '100%', maxWidth: '800px', backgroundColor: '#f9f9f9' }}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <IconButton>
+            <IconButton onClick={handlePreviousDay}>
               <ArrowBackIcon />
             </IconButton>
-            <Typography variant="h6">Today</Typography>
-            <IconButton>
+            <Typography variant="h6">{getCurrentDay()}</Typography> {/* Display current day */}
+            <IconButton onClick={handleNextDay}>
               <ArrowForwardIcon />
             </IconButton>
           </Stack>
