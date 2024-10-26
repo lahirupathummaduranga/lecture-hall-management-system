@@ -141,7 +141,7 @@ function HallAttendant({ userDetails, onLogout }) {
             </TableHead>
             <TableBody>
               {issues.map((issue) => (
-                <TableRow key={issue.id}>
+                <TableRow key={issue.id || issue.issueDescription}>
                   <TableCell>{issue.issueDescription}</TableCell>
                   <TableCell>{issue.lectureHall}</TableCell>
                 </TableRow>
