@@ -185,15 +185,6 @@ const Login = ({ onLoginSuccess }) => {
                 backgroundColor: '#f9f9f9',
                 borderRadius: '8px',
               }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={togglePasswordVisibility} edge="end">
-                      {showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
             />
             {error && (
               <Typography color="error" variant="body2" sx={{ marginTop: '8px' }}>
@@ -278,15 +269,15 @@ const Login = ({ onLoginSuccess }) => {
         </DialogTitle>
         <DialogContent>
           <Typography variant="body1" sx={{ textAlign: 'left', whiteSpace: 'pre-line' }}>
-            1. This privacy policy explains how we collect, use, and protect your personal information when using our Lecture Hall Management System.
-            2. We collect personal information such as email addresses and passwords necessary for account creation and authentication.
-            3. Your data is used to provide and improve the service, manage user accounts, and communicate with users regarding system updates and support.
-            4. We implement security measures to protect your data from unauthorized access, alteration, or disclosure.
-            5. We do not share your personal information with third parties except as required by law or to provide the service.
-            6. You have the right to access, correct, or delete your personal data. Please contact us if you wish to exercise these rights.
-            7. We may update this policy from time to time. We will notify you of any significant changes.
-            8. If you have any questions about this privacy policy, please contact us at [contact@example.com].
-            Thank you for using our system.
+            1. This privacy policy explains how we collect, use, and protect your personal information when using our Lecture Hall Management System.<br/><br/>
+            2. We collect personal information such as email addresses and passwords necessary for account creation and authentication.<br/><br/>
+            3. Your data is used to provide and improve the service, manage user accounts, and communicate with users regarding system updates and support.<br/><br/>
+            4. We implement security measures to protect your data from unauthorized access, alteration, or disclosure.<br/><br/>
+            5. We do not share your personal information with third parties except as required by law or to provide the service.<br/><br/>
+            6. You have the right to access, correct, or delete your personal data. Please contact us if you wish to exercise these rights.<br/><br/>
+            7. We may update this policy from time to time. We will notify you of any significant changes.<br/><br/>
+            8. If you have any questions about this privacy policy, please contact us at [contact@example.com].<br/><br/>
+            Thank you for using our system..!
           </Typography>
         </DialogContent>
         <DialogActions>
