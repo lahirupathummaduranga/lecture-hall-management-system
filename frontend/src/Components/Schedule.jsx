@@ -165,6 +165,7 @@ const Schedule = () => {
         setOpen(false);
         setSelectedEvent(null);
         setFormData({
+            subjectName: event.subjectName || '',  // New field for subject name
             date: '',
             startTime: '',
             endTime: '',
@@ -239,6 +240,19 @@ const Schedule = () => {
                 <DialogTitle>{selectedEvent ? 'Update Schedule' : 'Create Schedule'}</DialogTitle>
                 <DialogContent>
                     {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+
+
+
+                    <TextField
+    margin="dense"
+    name="subjectName"
+    label="Subject Name"
+    type="text"
+    fullWidth
+    value={formData.subjectName}
+    onChange={handleChange}
+    disabled={isCancelled}
+/>
                     <TextField
                         margin="dense"
                         name="date"

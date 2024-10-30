@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const lectureScheduleSchema = new mongoose.Schema({
+    subjectName: {  // New field for subject name
+        type: String,
+        required: true
+    },
     date: {
         type: Date,
         required: true

@@ -1,57 +1,61 @@
 import React, { useState, useEffect } from 'react';
+import { ArrowBack, ArrowForward } from '@mui/icons-material';
+import axios from 'axios';
 import NavBar from '../Components/Header/NavBar';
 import ProfileAndDateTime from '../Components/ProfileAndDateTime/ProfileAndDateTime';
 import Footer from '../Components/Footer/MainFooterComponent';
-import { Box, Button, IconButton, Typography, Stack, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import {
+  Box,
+  Typography,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+} from '@mui/material';
 import Mini from '../Components/mini-cal';
 
 const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
 function Student({ userDetails, onLogout }) {
-  const [openDialog, setOpenDialog] = useState(false);
-  const [selectedTask, setSelectedTask] = useState(null);
+  // Calculate the current day index
+  const currentDate = new Date();
+  const currentDayIndex = (currentDate.getDay() + 6) % 7; // Adjust for Monday start
 
-  // Set initial day based on the current day of the week
-  const getCurrentDayIndex = () => {
-    const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-    // Map Sunday (0) and Saturday (6) to Monday (index 0) if needed
-    return today >= 1 && today <= 5 ? today - 1 : 0; // Map Monday-Friday to 0-4
-  };
+  const [selectedDayIndex, setSelectedDayIndex] = useState(currentDayIndex);
+  const [subjects, setSubjects] = useState([]);
 
-  const [currentDayIndex, setCurrentDayIndex] = useState(getCurrentDayIndex);
+  useEffect(() => {
+    const fetchScheduleData = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/schedules');
+        const filteredData = response.data?.data
+          ?.filter(schedule => new Date(schedule.date).getDay() === (selectedDayIndex + 1) % 7)
+          .map(schedule => ({
+            subjectName: schedule.subjectName,
+            startTime: schedule.startTime,
+            endTime: schedule.endTime,
+            lectureHallId: schedule.lectureHallId?.name || 'N/A',
+          }));
+        setSubjects(filteredData);
+      } catch (error) {
+        console.error("Error fetching schedule data:", error);
+      }
+    };
 
-  const handleClickOpen = (task) => {
-    setSelectedTask(task);
-    setOpenDialog(true);
-  };
-
-  const handleClose = () => {
-    setOpenDialog(false);
-  };
-
-  const renderTaskDetails = (task) => {
-    switch (task) {
-      case 1:
-        return "Details for Task 1: Submit the assignment by 5 PM.";
-      case 2:
-        return "Details for Task 2: Attend the group study session at 3 PM.";
-      case 3:
-        return "Details for Task 3: Complete the online quiz before midnight.";
-      case 4:
-        return "Details for Task 4: Review lecture notes for tomorrow's class.";
-      default:
-        return "No details available.";
-    }
-  };
+    fetchScheduleData();
+  }, [selectedDayIndex]);
 
   const handleNextDay = () => {
-    setCurrentDayIndex((prevIndex) => (prevIndex + 1) % weekdays.length); // Loop between Monday to Friday
+    setSelectedDayIndex((prevIndex) => (prevIndex + 1) % weekdays.length);
   };
 
   const handlePreviousDay = () => {
-    setCurrentDayIndex((prevIndex) => (prevIndex - 1 + weekdays.length) % weekdays.length); // Loop back from Monday to Friday
+    setSelectedDayIndex((prevIndex) => (prevIndex - 1 + weekdays.length) % weekdays.length);
   };
 
   return (
@@ -80,66 +84,36 @@ function Student({ userDetails, onLogout }) {
           }}
         >
           <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <IconButton onClick={handlePreviousDay}>
-              <ArrowBackIcon />
-            </IconButton>
-            <Typography variant="h6">{weekdays[currentDayIndex]}</Typography>
-            <IconButton onClick={handleNextDay}>
-              <ArrowForwardIcon />
-            </IconButton>
+            <Button variant="outlined" onClick={handlePreviousDay} startIcon={<ArrowBack />}></Button>
+            <Typography variant="h6">{weekdays[selectedDayIndex]}</Typography>
+            <Button variant="outlined" onClick={handleNextDay} endIcon={<ArrowForward />}></Button>
           </Stack>
 
-          <Stack spacing={2} sx={{ marginTop: '16px' }}>
-            {[1, 2, 3, 4].map((item) => (
-              <Stack
-                key={item}
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-                sx={{
-                  backgroundColor: '#e3f2fd',
-                  padding: '8px 16px',
-                  borderRadius: '4px',
-                }}
-              >
-                <Typography variant="body1">Task {item}</Typography>
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: '#64b5f6',
-                    '&:hover': {
-                      backgroundColor: '#42a5f5',
-                      transform: 'scale(1.05)',
-                    },
-                    transition: 'background-color 0.3s, transform 0.3s',
-                  }}
-                  onClick={() => handleClickOpen(item)}
-                >
-                  View
-                </Button>
-              </Stack>
-            ))}
-          </Stack>
+          <TableContainer component={Paper} sx={{ marginTop: '16px' }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Subject</TableCell>
+                  <TableCell>Time</TableCell>
+                  <TableCell>Venue</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {subjects.map((subject, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{subject.subjectName}</TableCell>
+                    <TableCell>{`${new Date(subject.startTime).toLocaleTimeString()} - ${new Date(subject.endTime).toLocaleTimeString()}`}</TableCell>
+                    <TableCell>{subject.lectureHallId}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Box>
       </div>
 
       <Mini />
-
       <Footer />
-
-      <Dialog open={openDialog} onClose={handleClose}>
-        <DialogTitle>Task Details</DialogTitle>
-        <DialogContent>
-          <Typography variant="body1">
-            {selectedTask !== null ? renderTaskDetails(selectedTask) : "No task selected."}
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
     </div>
   );
 }

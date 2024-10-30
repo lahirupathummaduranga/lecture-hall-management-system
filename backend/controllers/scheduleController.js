@@ -2,7 +2,7 @@ const LectureSchedule = require('../models/scheduleModel');
 const mongoose = require('mongoose');
 
 exports.createSchedule = async (req, res) => {
-    const { date, startTime, endTime, lecturerId, scheduleStatus, batch, department, lectureHallId } = req.body;
+    const { subjectName, date, startTime, endTime, lecturerId, scheduleStatus, batch, department, lectureHallId } = req.body;
 
     try {
         const startDate = new Date(`${date}T${startTime}`);
@@ -25,6 +25,7 @@ exports.createSchedule = async (req, res) => {
         }
 
         const newSchedule = new LectureSchedule({
+            subjectName, // New field for subject name
             date,
             startTime: startDate,
             endTime: endDate,
@@ -147,7 +148,10 @@ exports.getAllSchedules = async (req, res) => {
 
         res.status(200).json({
             message: "All schedules retrieved successfully",
-            data: schedules
+            data: schedules.map(schedule => ({
+                ...schedule.toObject(),
+                subjectName: schedule.subjectName  // Include subject name in response
+            }))
         });
     } catch (error) {
         res.status(500).json({
@@ -159,10 +163,11 @@ exports.getAllSchedules = async (req, res) => {
 
 exports.updateSchedule = async (req, res) => {
     const { scheduleId } = req.params;
-    const { date, startTime, endTime, lecturerId, scheduleStatus, batch, department, lectureHallId } = req.body;
+    const { subjectName, date, startTime, endTime, lecturerId, scheduleStatus, batch, department, lectureHallId } = req.body;
 
     try {
         const updateFields = {};
+        if (subjectName) updateFields.subjectName = subjectName;  // New field for subject name
         if (date) updateFields.date = new Date(date);
         if (startTime) updateFields.startTime = new Date(`${date}T${startTime}`);
         if (endTime) updateFields.endTime = new Date(`${date}T${endTime}`);
