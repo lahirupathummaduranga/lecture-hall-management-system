@@ -3,21 +3,39 @@ import NavBar from '../Components/Header/NavBar';
 import ProfileAndDateTime from '../Components/ProfileAndDateTime/ProfileAndDateTime';
 import Footer from '../Components/Footer/MainFooterComponent';
 import {
-  Box, Button, IconButton, Typography, Stack, Dialog, DialogTitle, DialogContent, DialogActions,
-  Table, TableHead, TableRow, TableCell, TableBody
+  Box,
+  Button,
+  IconButton,
+  Typography,
+  Stack,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Mini from '../Components/mini-cal';
+import axios from 'axios';
+
+const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
 function HallAttendant({ userDetails, onLogout }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
-  const [openIssuesDialog, setOpenIssuesDialog] = useState(false); 
+  const [openIssuesDialog, setOpenIssuesDialog] = useState(false);
   const [issues, setIssues] = useState([]); // State to store fetched issues
-  const [currentDayIndex, setCurrentDayIndex] = useState(4); // Start on Friday (index 4)
+  const [schedules, setSchedules] = useState([]); // State to store fetched schedules
 
-  const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  // Calculate the current day index
+  const currentDate = new Date();
+  const currentDayIndex = (currentDate.getDay() + 6) % 7; // Adjust for Monday start
+  const [dayIndex, setDayIndex] = useState(currentDayIndex); // Use state for day index
 
   // Fetch issues from the backend
   useEffect(() => {
@@ -33,6 +51,28 @@ function HallAttendant({ userDetails, onLogout }) {
 
     fetchIssues();
   }, []); // Fetch once when the component mounts
+
+  // Fetch schedules based on the current day
+  useEffect(() => {
+    const fetchScheduleData = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/schedules');
+        const filteredData = response.data?.data
+          ?.filter(schedule => new Date(schedule.date).getDay() === (dayIndex + 1) % 7)
+          .map(schedule => ({
+            subjectName: schedule.subjectName,
+            startTime: schedule.startTime,
+            endTime: schedule.endTime,
+            lectureHallId: schedule.lectureHallId?.name || 'N/A',
+          }));
+        setSchedules(filteredData);
+      } catch (error) {
+        console.error("Error fetching schedule data:", error);
+      }
+    };
+
+    fetchScheduleData();
+  }, [dayIndex]);
 
   const handleClickOpen = (task) => {
     setSelectedTask(task);
@@ -51,27 +91,13 @@ function HallAttendant({ userDetails, onLogout }) {
     setOpenIssuesDialog(false); // Close the issues dialog
   };
 
-  // Function to get the current day name based on index
-  const getCurrentDay = () => {
-    return weekdays[currentDayIndex];
-  };
-
   // Handlers for Next and Previous buttons
   const handleNextDay = () => {
-    // Cycle back to Monday after Friday
-    if (currentDayIndex === weekdays.length - 1) {
-      setCurrentDayIndex(0); // Go to Monday
-    } else {
-      setCurrentDayIndex(currentDayIndex + 1); // Go to next day
-    }
+    setDayIndex((prevIndex) => (prevIndex + 1) % weekdays.length);
   };
 
   const handlePreviousDay = () => {
-    if (currentDayIndex === 0) {
-      setCurrentDayIndex(weekdays.length - 1); // Go to Friday
-    } else {
-      setCurrentDayIndex(currentDayIndex - 1); // Go to previous day
-    }
+    setDayIndex((prevIndex) => (prevIndex - 1 + weekdays.length) % weekdays.length);
   };
 
   return (
@@ -80,32 +106,36 @@ function HallAttendant({ userDetails, onLogout }) {
       <ProfileAndDateTime userDetails={userDetails} />
 
       <div style={{ padding: '16px' }}>
-        <h1>Welcome, {userDetails.name}</h1>
-        <p>You are logged in as a Hall Attendant.</p>
+        <Typography variant="h4">Welcome, {userDetails.name}</Typography>
+        <Typography variant="body1">You are logged in as a Hall Attendant.</Typography>
       </div>
 
       <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-end', padding: '16px', marginTop: 'auto' }}>
         <Box sx={{ padding: '16px', border: '1px solid #e0e0e0', borderRadius: '8px', width: '100%', maxWidth: '800px', backgroundColor: '#f9f9f9' }}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <IconButton onClick={handlePreviousDay}>
-              <ArrowBackIcon />
-            </IconButton>
-            <Typography variant="h6">{getCurrentDay()}</Typography> {/* Display current day */}
-            <IconButton onClick={handleNextDay}>
-              <ArrowForwardIcon />
-            </IconButton>
+            <Button variant="outlined" onClick={handlePreviousDay} startIcon={<ArrowBackIcon />}></Button>
+            <Typography variant="h6">{weekdays[dayIndex]}</Typography>
+            <Button variant="outlined" onClick={handleNextDay} endIcon={<ArrowForwardIcon />}></Button>
           </Stack>
 
-          <Stack spacing={2} sx={{ marginTop: '16px' }}>
-            {[1, 2, 3, 4, 5].map((item) => (
-              <Stack key={item} direction="row" justifyContent="space-between" alignItems="center" sx={{ backgroundColor: '#e3f2fd', padding: '8px 16px', borderRadius: '4px' }}>
-                <Typography variant="body1">Task {item}</Typography>
-                <Button variant="contained" sx={{ backgroundColor: '#64b5f6', '&:hover': { backgroundColor: '#42a5f5', transform: 'scale(1.05)' }, transition: 'background-color 0.3s, transform 0.3s' }} onClick={() => handleClickOpen(item)}>
-                  View
-                </Button>
-              </Stack>
-            ))}
-          </Stack>
+          <Table sx={{ marginTop: '16px' }}>
+            <TableHead>
+              <TableRow>
+                <TableCell>Subject</TableCell>
+                <TableCell>Time</TableCell>
+                <TableCell>Venue</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {schedules.map((schedule, index) => (
+                <TableRow key={index}>
+                  <TableCell>{schedule.subjectName}</TableCell>
+                  <TableCell>{`${new Date(schedule.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(schedule.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}</TableCell>
+                  <TableCell>{schedule.lectureHallId}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </Box>
       </div>
 
