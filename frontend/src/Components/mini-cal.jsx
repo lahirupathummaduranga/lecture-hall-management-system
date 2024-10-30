@@ -1,97 +1,75 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import axios from 'axios';
 
 const localizer = momentLocalizer(moment);
 
-const Schedule = () => {
-    const [events, setEvents] = useState([]);
-
-    useEffect(() => {
-        fetchSchedules();
-    }, []);
-
-    const fetchSchedules = async () => {
-        try {
-            const response = await axios.get('http://localhost:3000/api/schedules');
-            const schedules = response.data?.data?.map(schedule => ({
-                ...schedule,
-                start: new Date(schedule.startTime),
-                end: new Date(schedule.endTime),
-                title: `${schedule.scheduleStatus} - ${schedule.batch?.batch || ''} - ${schedule.department?.department || ''} - ${schedule.lectureHallId?.name || 'N/A'}`
-            }));
-            setEvents(schedules);
-        } catch (error) {
-            console.error('Error fetching schedules:', error);
-        }
+const CustomToolbar = (toolbar) => {
+    const goToBack = () => {
+        toolbar.onNavigate('PREV');
     };
 
-    const eventStyleGetter = (event) => {
-        let backgroundColor = '';
-        let borderColor = '';
-        switch (event.scheduleStatus) {
-            case 'Scheduled':
-                backgroundColor = '#90caf9';
-                borderColor = '#64b5f6';
-                break;
-            case 'Completed':
-                backgroundColor = '#81c784';
-                borderColor = '#66bb6a';
-                break;
-            case 'Cancelled':
-                backgroundColor = '#e57373';
-                borderColor = '#f44336';
-                break;
-            case 'Postponed':
-                backgroundColor = '#ffb74d';
-                borderColor = '#ffa726';
-                break;
-            default:
-                backgroundColor = '#90caf9';
-                borderColor = '#64b5f6';
-        }
-        return {
-            style: {
-                backgroundColor,
-                borderColor,
-                borderWidth: '1px',
-                borderStyle: 'solid',
-                color: 'white'
-            }
-        };
+    const goToNext = () => {
+        toolbar.onNavigate('NEXT');
+    };
+
+    const goToToday = () => {
+        toolbar.onNavigate('TODAY');
     };
 
     return (
-        <div
-            style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                paddingBottom: 10,
-                paddingRight: 50,
-                boxSizing: 'border-box',
-                position: 'absolute', // Keep the element positioned absolutely
-                bottom: 20, // Position it at the bottom of the page
-                right: 20, // Position it on the right side
-                width: 'auto', // Set width to auto to avoid stretching
-            }}
-        >
-            <div style={{ flex: '1' }}>
-                {/* Other content can go here */}
-            </div>
-            <div style={{ width: '400px', height: '400px' }}>
-                <Calendar
-                    localizer={localizer}
-                    events={events}
-                    startAccessor="start"
-                    endAccessor="end"
-                    style={{ height: '100%', width: '100%' }}
-                    eventPropGetter={eventStyleGetter}
-                />
-            </div>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '15px' }}>
+            <button onClick={goToBack} style={buttonStyle}>
+                &#9664; Back
+            </button>
+            <button onClick={goToToday} style={{ ...buttonStyle, margin: '0 10px' }}>
+                Today
+            </button>
+            <button onClick={goToNext} style={buttonStyle}>
+                Next &#9654;
+            </button>
         </div>
     );
 };
 
-export default Schedule;
+const buttonStyle = {
+    padding: '8px 16px',
+    backgroundColor: '#90caf9',
+    color: 'white',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+    transition: 'background-color 0.3s',
+};
+
+const BasicCalendar = () => {
+    return (
+        <div
+            style={{
+                width: '400px',
+                height: '400px',
+                position: 'absolute',
+                top: '320px',
+                right: '20px',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                borderRadius: '8px',
+                overflow: 'hidden',
+            }}
+        >
+            <Calendar
+                localizer={localizer}
+                events={[]}
+                startAccessor="start"
+                endAccessor="end"
+                style={{ height: '100%', width: '100%' }}
+                views={['month']}
+                components={{ toolbar: CustomToolbar }}
+            />
+        </div>
+    );
+};
+
+export default BasicCalendar;
