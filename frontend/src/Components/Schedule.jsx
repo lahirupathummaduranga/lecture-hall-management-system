@@ -13,6 +13,7 @@ const Schedule = () => {
     const [open, setOpen] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [formData, setFormData] = useState({
+        subjectName: '',
         date: '',
         startTime: '',
         endTime: '',
@@ -43,7 +44,7 @@ const Schedule = () => {
                 ...schedule,
                 start: new Date(schedule.startTime),
                 end: new Date(schedule.endTime),
-                title: `${schedule.scheduleStatus} - ${schedule.batch?.batch || ''} - ${schedule.department?.department || ''} - ${schedule.lectureHallId?.name || 'N/A'}`
+                title: `${schedule.subjectName || 'No Subject'} - ${schedule.scheduleStatus} - ${schedule.batch?.batch || ''} - ${schedule.department?.department || ''} - ${schedule.lectureHallId?.name || 'N/A'}`
             }));
             setEvents(schedules);
         } catch (error) {
@@ -102,6 +103,7 @@ const Schedule = () => {
     const handleSelectEvent = (event) => {
         setSelectedEvent(event);
         setFormData({
+            subjectName: event.subjectName || '',
             date: moment(event.date).format('YYYY-MM-DD'),
             startTime: moment(event.startTime).format('HH:mm'),
             endTime: moment(event.endTime).format('HH:mm'),
@@ -165,7 +167,7 @@ const Schedule = () => {
         setOpen(false);
         setSelectedEvent(null);
         setFormData({
-            subjectName: event.subjectName || '',  // New field for subject name
+            subjectName: '',
             date: '',
             startTime: '',
             endTime: '',
@@ -240,19 +242,16 @@ const Schedule = () => {
                 <DialogTitle>{selectedEvent ? 'Update Schedule' : 'Create Schedule'}</DialogTitle>
                 <DialogContent>
                     {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-
-
-
                     <TextField
-    margin="dense"
-    name="subjectName"
-    label="Subject Name"
-    type="text"
-    fullWidth
-    value={formData.subjectName}
-    onChange={handleChange}
-    disabled={isCancelled}
-/>
+                        margin="dense"
+                        name="subjectName"
+                        label="Subject Name"
+                        type="text"
+                        fullWidth
+                        value={formData.subjectName}
+                        onChange={handleChange}
+                        disabled={isCancelled}
+                    />
                     <TextField
                         margin="dense"
                         name="date"
@@ -334,16 +333,16 @@ const Schedule = () => {
                         </Select>
                     </FormControl>
                     <FormControl fullWidth margin="dense" disabled={isCancelled}>
-                        <InputLabel id="lecture-hall-label">Lecture Hall</InputLabel>
+                        <InputLabel id="lectureHallId-label">Lecture Hall</InputLabel>
                         <Select
-                            labelId="lecture-hall-label"
+                            labelId="lectureHallId-label"
                             name="lectureHallId"
                             value={formData.lectureHallId}
                             onChange={handleChange}
                         >
-                            {lectureHalls.map((hall) => (
-                                <MenuItem key={hall._id} value={hall._id}>
-                                    {hall.name}
+                            {lectureHalls.map((lectureHall) => (
+                                <MenuItem key={lectureHall._id} value={lectureHall._id}>
+                                    {lectureHall.name}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -364,9 +363,15 @@ const Schedule = () => {
                     </FormControl>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color="secondary">Cancel</Button>
-                    {!isCancelled && selectedEvent && <Button onClick={handleDelete} color="secondary">Delete</Button>}
-                    {!isCancelled && <Button onClick={handleSubmit} color="primary">{selectedEvent ? 'Update' : 'Create'}</Button>}
+                    {selectedEvent && (
+                        <Button onClick={handleDelete} color="error" disabled={isCancelled}>
+                            Delete
+                        </Button>
+                    )}
+                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={handleSubmit} color="primary" disabled={isCancelled}>
+                        {selectedEvent ? 'Update' : 'Create'}
+                    </Button>
                 </DialogActions>
             </Dialog>
         </div>

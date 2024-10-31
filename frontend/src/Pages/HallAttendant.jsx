@@ -5,7 +5,6 @@ import Footer from '../Components/Footer/MainFooterComponent';
 import {
   Box,
   Button,
-  IconButton,
   Typography,
   Stack,
   Dialog,
@@ -29,28 +28,27 @@ function HallAttendant({ userDetails, onLogout }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [openIssuesDialog, setOpenIssuesDialog] = useState(false);
-  const [issues, setIssues] = useState([]); // State to store fetched issues
-  const [schedules, setSchedules] = useState([]); // State to store fetched schedules
+  const [issues, setIssues] = useState([]); 
+  const [schedules, setSchedules] = useState([]); 
 
-  // Calculate the current day index
   const currentDate = new Date();
-  const currentDayIndex = (currentDate.getDay() + 6) % 7; // Adjust for Monday start
-  const [dayIndex, setDayIndex] = useState(currentDayIndex); // Use state for day index
+  const currentDayIndex = (currentDate.getDay() + 6) % 7; 
+  const [dayIndex, setDayIndex] = useState(currentDayIndex);
 
   // Fetch issues from the backend
   useEffect(() => {
     const fetchIssues = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/issues'); // Adjust API endpoint as needed
+        const response = await fetch('http://localhost:3000/api/issues'); 
         const data = await response.json();
-        setIssues(data); // Store fetched issues
+        setIssues(data);
       } catch (error) {
         console.error('Error fetching issues:', error);
       }
     };
 
     fetchIssues();
-  }, []); // Fetch once when the component mounts
+  }, []);
 
   // Fetch schedules based on the current day
   useEffect(() => {
@@ -64,6 +62,7 @@ function HallAttendant({ userDetails, onLogout }) {
             startTime: schedule.startTime,
             endTime: schedule.endTime,
             lectureHallId: schedule.lectureHallId?.name || 'N/A',
+            scheduleStatus: schedule.scheduleStatus, // Include status here
           }));
         setSchedules(filteredData);
       } catch (error) {
@@ -84,20 +83,34 @@ function HallAttendant({ userDetails, onLogout }) {
   };
 
   const handleViewIssues = () => {
-    setOpenIssuesDialog(true); // Open the issues dialog
+    setOpenIssuesDialog(true);
   };
 
   const handleCloseIssues = () => {
-    setOpenIssuesDialog(false); // Close the issues dialog
+    setOpenIssuesDialog(false);
   };
 
-  // Handlers for Next and Previous buttons
   const handleNextDay = () => {
     setDayIndex((prevIndex) => (prevIndex + 1) % weekdays.length);
   };
 
   const handlePreviousDay = () => {
     setDayIndex((prevIndex) => (prevIndex - 1 + weekdays.length) % weekdays.length);
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Scheduled':
+        return 'blue';
+      case 'Completed':
+        return 'green';
+      case 'Postponed':
+        return 'orange';
+      case 'Cancelled':
+        return 'red';
+      default:
+        return 'black'; 
+    }
   };
 
   return (
@@ -124,6 +137,7 @@ function HallAttendant({ userDetails, onLogout }) {
                 <TableCell>Subject</TableCell>
                 <TableCell>Time</TableCell>
                 <TableCell>Venue</TableCell>
+                <TableCell>Status</TableCell> {/* New Status Column */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -132,6 +146,7 @@ function HallAttendant({ userDetails, onLogout }) {
                   <TableCell>{schedule.subjectName}</TableCell>
                   <TableCell>{`${new Date(schedule.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(schedule.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}</TableCell>
                   <TableCell>{schedule.lectureHallId}</TableCell>
+                  <TableCell style={{ color: getStatusColor(schedule.scheduleStatus) }}>{schedule.scheduleStatus}</TableCell> {/* Display Status */}
                 </TableRow>
               ))}
             </TableBody>
@@ -141,8 +156,18 @@ function HallAttendant({ userDetails, onLogout }) {
 
       <Mini />
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '20px' }}>
-        <Button variant="contained" sx={{ backgroundColor: '#64b5f6', textTransform: 'none', '&:hover': { backgroundColor: '#42a5f5', transform: 'scale(1.05)' }, transition: 'background-color 0.3s, transform 0.3s' }} onClick={handleViewIssues}>
+      {/* Changed position of View Issues button */}
+      <div style={{ display: 'flex', justifyContent: 'flex-start', padding: '20px' }}>
+        <Button 
+          variant="contained" 
+          sx={{ 
+            backgroundColor: '#64b5f6', 
+            textTransform: 'none', 
+            '&:hover': { backgroundColor: '#42a5f5', transform: 'scale(1.05)' }, 
+            transition: 'background-color 0.3s, transform 0.3s' 
+          }} 
+          onClick={handleViewIssues}
+        >
           View Issues
         </Button>
       </div>

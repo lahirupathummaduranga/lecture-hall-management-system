@@ -40,6 +40,7 @@ function Student({ userDetails, onLogout }) {
             startTime: schedule.startTime,
             endTime: schedule.endTime,
             lectureHallId: schedule.lectureHallId?.name || 'N/A',
+            scheduleStatus: schedule.scheduleStatus, // Include the status here
           }));
         setSubjects(filteredData);
       } catch (error) {
@@ -56,6 +57,21 @@ function Student({ userDetails, onLogout }) {
 
   const handlePreviousDay = () => {
     setSelectedDayIndex((prevIndex) => (prevIndex - 1 + weekdays.length) % weekdays.length);
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Scheduled':
+        return 'blue';
+      case 'Completed':
+        return 'green';
+      case 'Postponed':
+        return 'orange';
+      case 'Cancelled':
+        return 'red';
+      default:
+        return 'black'; // Default color if status doesn't match
+    }
   };
 
   return (
@@ -96,6 +112,7 @@ function Student({ userDetails, onLogout }) {
                   <TableCell>Subject</TableCell>
                   <TableCell>Time</TableCell>
                   <TableCell>Venue</TableCell>
+                  <TableCell>Status</TableCell> {/* New Status Column */}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -104,6 +121,7 @@ function Student({ userDetails, onLogout }) {
                     <TableCell>{subject.subjectName}</TableCell>
                     <TableCell>{`${new Date(subject.startTime).toLocaleTimeString()} - ${new Date(subject.endTime).toLocaleTimeString()}`}</TableCell>
                     <TableCell>{subject.lectureHallId}</TableCell>
+                    <TableCell style={{ color: getStatusColor(subject.scheduleStatus) }}>{subject.scheduleStatus}</TableCell> {/* Display Status */}
                   </TableRow>
                 ))}
               </TableBody>
