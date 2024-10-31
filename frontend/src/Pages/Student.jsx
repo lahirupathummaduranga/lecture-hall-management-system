@@ -22,7 +22,6 @@ import Mini from '../Components/mini-cal';
 const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
 function Student({ userDetails, onLogout }) {
-  // Calculate the current day index
   const currentDate = new Date();
   const currentDayIndex = (currentDate.getDay() + 6) % 7; // Adjust for Monday start
 
@@ -35,14 +34,17 @@ function Student({ userDetails, onLogout }) {
         const response = await axios.get('http://localhost:3000/api/schedules');
         const filteredData = response.data?.data
           ?.filter(schedule => new Date(schedule.date).getDay() === (selectedDayIndex + 1) % 7)
-          .map(schedule => ({
-            subjectName: schedule.subjectName,
-            startTime: schedule.startTime,
-            endTime: schedule.endTime,
-            lectureHallId: schedule.lectureHallId?.name || 'N/A',
-            scheduleStatus: schedule.scheduleStatus, // Include the status here
-            date: schedule.date, // Add date here
-          }));
+          .map(schedule => {
+            const isCompleted = new Date(schedule.endTime) < new Date();
+            return {
+              subjectName: schedule.subjectName,
+              startTime: schedule.startTime,
+              endTime: schedule.endTime,
+              lectureHallId: schedule.lectureHallId?.name || 'N/A',
+              scheduleStatus: isCompleted ? 'Completed' : schedule.scheduleStatus, // Set to Completed if end time passed
+              date: schedule.date,
+            };
+          });
         setSubjects(filteredData);
       } catch (error) {
         console.error("Error fetching schedule data:", error);
@@ -71,7 +73,7 @@ function Student({ userDetails, onLogout }) {
       case 'Cancelled':
         return 'red';
       default:
-        return 'black'; // Default color if status doesn't match
+        return 'black';
     }
   };
 
@@ -110,21 +112,21 @@ function Student({ userDetails, onLogout }) {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Date</TableCell> {/* New Date Column */}
+                  <TableCell>Date</TableCell>
                   <TableCell>Subject</TableCell>
                   <TableCell>Time</TableCell>
                   <TableCell>Venue</TableCell>
-                  <TableCell>Status</TableCell> {/* New Status Column */}
+                  <TableCell>Status</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {subjects.map((subject, index) => (
                   <TableRow key={index}>
-                    <TableCell>{new Date(subject.date).toLocaleDateString()}</TableCell> {/* Display Date */}
+                    <TableCell>{new Date(subject.date).toLocaleDateString()}</TableCell>
                     <TableCell>{subject.subjectName}</TableCell>
                     <TableCell>{`${new Date(subject.startTime).toLocaleTimeString()} - ${new Date(subject.endTime).toLocaleTimeString()}`}</TableCell>
                     <TableCell>{subject.lectureHallId}</TableCell>
-                    <TableCell style={{ color: getStatusColor(subject.scheduleStatus) }}>{subject.scheduleStatus}</TableCell> {/* Display Status */}
+                    <TableCell style={{ color: getStatusColor(subject.scheduleStatus) }}>{subject.scheduleStatus}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
