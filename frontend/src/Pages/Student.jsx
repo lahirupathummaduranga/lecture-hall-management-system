@@ -41,6 +41,7 @@ function Student({ userDetails, onLogout }) {
             endTime: schedule.endTime,
             lectureHallId: schedule.lectureHallId?.name || 'N/A',
             scheduleStatus: schedule.scheduleStatus, // Include the status here
+            date: schedule.date, // Add date here
           }));
         setSubjects(filteredData);
       } catch (error) {
@@ -109,6 +110,7 @@ function Student({ userDetails, onLogout }) {
             <Table>
               <TableHead>
                 <TableRow>
+                  <TableCell>Date</TableCell> {/* New Date Column */}
                   <TableCell>Subject</TableCell>
                   <TableCell>Time</TableCell>
                   <TableCell>Venue</TableCell>
@@ -118,6 +120,7 @@ function Student({ userDetails, onLogout }) {
               <TableBody>
                 {subjects.map((subject, index) => (
                   <TableRow key={index}>
+                    <TableCell>{new Date(subject.date).toLocaleDateString()}</TableCell> {/* Display Date */}
                     <TableCell>{subject.subjectName}</TableCell>
                     <TableCell>{`${new Date(subject.startTime).toLocaleTimeString()} - ${new Date(subject.endTime).toLocaleTimeString()}`}</TableCell>
                     <TableCell>{subject.lectureHallId}</TableCell>
