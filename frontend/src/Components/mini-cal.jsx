@@ -5,13 +5,14 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 const localizer = momentLocalizer(moment);
 
+
 const CustomToolbar = ({ date, onNavigate }) => {
     const monthYear = moment(date).format('MMMM YYYY');
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px', marginTop:'8px' }}>
             <button onClick={() => onNavigate('PREV')} style={buttonStyle}>&#9664; </button>
-            <span style={{ margin: '0 5px', fontWeight: 'bold', fontSize: '1em' }}>{monthYear}</span>
+            <span style={{ margin: '0 15px', fontWeight: 'bold', fontSize: '1.15em' }}>{monthYear}</span>
             <button onClick={() => onNavigate('NEXT')} style={buttonStyle}>&#9654;</button>
         </div>
     );
@@ -19,7 +20,7 @@ const CustomToolbar = ({ date, onNavigate }) => {
 
 const buttonStyle = {
     padding: '6px 12px',
-    backgroundColor: '#4682b4',
+    backgroundColor: '#131862',
     color: '#fff',
     border: 'none',
     borderRadius: '15px',
@@ -45,13 +46,13 @@ const BasicCalendar = () => {
             width: '400px', // Reduced width
             height: '300px', // Reduced height
             position: 'absolute',
-            top: '320px',
-            right: '40px',
+            top: '280px',
+            right: '100px',
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
-            borderRadius: '20px',
+            borderRadius: '5px',
             overflow: 'hidden',
-            backgroundColor: '#6495ed',
-            border: '5px solid black', // Added black border
+            backgroundColor: '#B0D4F8',
+            border: '3px solid black', // Added black border
         }}>
             <Calendar
                 localizer={localizer}
@@ -69,3 +70,4 @@ const BasicCalendar = () => {
 };
 
 export default BasicCalendar;
+

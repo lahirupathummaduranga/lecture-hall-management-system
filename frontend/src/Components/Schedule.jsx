@@ -366,7 +366,7 @@ const Schedule = () => {
                     {selectedEvent && (
                         <Button onClick={handleDelete} color="error" disabled={isCancelled}>
                             Delete
-                        </Button>
+                        </Button>               
                     )}
                     <Button onClick={handleClose}>Cancel</Button>
                     <Button onClick={handleSubmit} color="primary" disabled={isCancelled}>

@@ -78,7 +78,6 @@ function Lecturer({ userDetails, onLogout }) {
             <ProfileAndDateTime userDetails={userDetails} />
             <div style={{ padding: '20px' }}>
                 <h1>Welcome, {userDetails.name}</h1>
-                <p>You are logged in as a Lecturer.</p>
                 <Scheduled />
 
                 {/* Report Issue Button */}

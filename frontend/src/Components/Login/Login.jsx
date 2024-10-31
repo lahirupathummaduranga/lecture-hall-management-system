@@ -185,6 +185,15 @@ const Login = ({ onLoginSuccess }) => {
                 backgroundColor: '#f9f9f9',
                 borderRadius: '8px',
               }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={togglePasswordVisibility} edge="end">
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
             {error && (
               <Typography color="error" variant="body2" sx={{ marginTop: '8px' }}>

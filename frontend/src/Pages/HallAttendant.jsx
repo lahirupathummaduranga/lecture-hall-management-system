@@ -100,14 +100,26 @@ function HallAttendant({ userDetails, onLogout }) {
     setDayIndex((prevIndex) => (prevIndex - 1 + weekdays.length) % weekdays.length);
   };
 
+  const getGreeting = () => {
+    const hour = currentDate.getHours();
+    if (hour < 12) {
+      return `Good morning, ${userDetails.name}!`;
+    } else if (hour < 18) {
+      return `Good afternoon, ${userDetails.name}!`;
+    } else {
+      return `Good evening, ${userDetails.name}!`;
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <NavBar onLogout={onLogout} />
       <ProfileAndDateTime userDetails={userDetails} />
 
       <div style={{ padding: '16px' }}>
-        <Typography variant="h4">Welcome, {userDetails.name}</Typography>
-        <Typography variant="body1">You are logged in as a Hall Attendant.</Typography>
+      <Typography variant="h5" sx={{ marginBottom: '16px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold' }}>
+          {getGreeting()}
+      </Typography>
       </div>
 
       <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-end', padding: '16px', marginTop: 'auto' }}>
