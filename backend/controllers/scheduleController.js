@@ -20,7 +20,7 @@ exports.createSchedule = async (req, res) => {
 
         if (existingSchedules.length > 0) {
             return res.status(400).json({
-                message: "Conflict detected: There is already a lecture scheduled during this time for the same department and batch."
+                message: "Booking Unavailable: The selected lecture hall is already booked at this time by another lecturer. Please choose a different time or lecture hall. "
             });
         }
 
