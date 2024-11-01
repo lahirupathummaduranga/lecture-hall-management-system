@@ -41,9 +41,8 @@ function HallAttendant({ userDetails, onLogout }) {
   useEffect(() => {
     const fetchIssues = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/issues'); // Adjust API endpoint as needed
-        const data = await response.json();
-        setIssues(data); // Store fetched issues
+        const response = await axios.get('http://localhost:3000/api/issues'); // Adjust API endpoint as needed
+        setIssues(response.data); // Store fetched issues
       } catch (error) {
         console.error('Error fetching issues:', error);
       }
@@ -111,15 +110,25 @@ function HallAttendant({ userDetails, onLogout }) {
     }
   };
 
+  // Function to handle marking an issue as complete
+  const handleMarkAsComplete = async (issueId) => {
+    try {
+      await axios.delete(`http://localhost:3000/api/issues/${issueId}`);
+      setIssues((prevIssues) => prevIssues.filter((issue) => issue._id !== issueId)); // Update state
+    } catch (error) {
+      console.error('Error marking issue as complete:', error);
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <NavBar onLogout={onLogout} />
       <ProfileAndDateTime userDetails={userDetails} />
 
       <div style={{ padding: '16px' }}>
-      <Typography variant="h5" sx={{ marginBottom: '16px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold' }}>
+        <Typography variant="h5" sx={{ marginBottom: '16px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold' }}>
           {getGreeting()}
-      </Typography>
+        </Typography>
       </div>
 
       <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-end', padding: '16px', marginTop: 'auto' }}>
@@ -179,13 +188,19 @@ function HallAttendant({ userDetails, onLogout }) {
               <TableRow>
                 <TableCell>Issue</TableCell>
                 <TableCell>Lecture Hall</TableCell>
+                <TableCell>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {issues.map((issue) => (
-                <TableRow key={issue.id || issue.issueDescription}>
+                <TableRow key={issue._id}>
                   <TableCell>{issue.issueDescription}</TableCell>
                   <TableCell>{issue.lectureHall}</TableCell>
+                  <TableCell>
+                    <Button variant="contained" color="secondary" onClick={() => handleMarkAsComplete(issue._id)}>
+                      Mark as Complete
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -200,4 +215,3 @@ function HallAttendant({ userDetails, onLogout }) {
 }
 
 export default HallAttendant;
-
