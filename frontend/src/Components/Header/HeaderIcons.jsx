@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
-import { IconButton, Menu, MenuItem, Box } from '@mui/material';
+import { IconButton, Menu, MenuItem, Box, Badge } from '@mui/material';
 import { Message as MessageIcon, Notifications as NotificationsIcon, AccountCircle as AccountCircleIcon } from '@mui/icons-material';
 
-const HeaderIcons = ({ onLogout }) => {
-    const [anchorEl, setAnchorEl] = useState(null);
+const HeaderIcons = ({ onLogout, notificationCount }) => {
+    const [profileMenuAnchor, setProfileMenuAnchor] = useState(null);
 
-    const handleMenuOpen = (event) => {
-        setAnchorEl(event.currentTarget);
+    const handleProfileMenuOpen = (event) => {
+        setProfileMenuAnchor(event.currentTarget);
     };
 
-    const handleMenuClose = () => {
-        setAnchorEl(null);
+    const handleProfileMenuClose = () => {
+        setProfileMenuAnchor(null);
     };
 
     const handleLogoutClick = () => {
-        handleMenuClose();
+        handleProfileMenuClose();
         onLogout();
     };
 
@@ -23,22 +23,18 @@ const HeaderIcons = ({ onLogout }) => {
             <IconButton size="large" edge="end" color="inherit" sx={{ margin: '0 8px' }}>
                 <MessageIcon />
             </IconButton>
-            <IconButton size="large" edge="end" color="inherit" sx={{ margin: '0 8px' }}>
-                <NotificationsIcon />
+            <IconButton size="large" edge="end" color="inherit">
+                <Badge badgeContent={notificationCount} color="error">
+                    <NotificationsIcon />
+                </Badge>
             </IconButton>
-            <IconButton
-                size="large"
-                edge="end"
-                color="inherit"
-                sx={{ margin: '0 8px' }}
-                onClick={handleMenuOpen}
-            >
+            <IconButton size="large" edge="end" color="inherit" onClick={handleProfileMenuOpen}>
                 <AccountCircleIcon />
             </IconButton>
             <Menu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleMenuClose}
+                anchorEl={profileMenuAnchor}
+                open={Boolean(profileMenuAnchor)}
+                onClose={handleProfileMenuClose}
             >
                 <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
             </Menu>
