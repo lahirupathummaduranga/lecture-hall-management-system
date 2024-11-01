@@ -20,15 +20,15 @@ const HeaderIcons = ({ onLogout, notificationCount }) => {
 
     return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <IconButton size="large" edge="end" color="inherit" sx={{ margin: '0 8px' }}>
+            <IconButton size="large" edge="end" color="inherit" sx={{ margin: '0 10px' }}>
                 <MessageIcon />
             </IconButton>
             <IconButton size="large" edge="end" color="inherit">
-                <Badge badgeContent={notificationCount} color="error">
+                <Badge badgeContent={notificationCount} color="error" sx={{ margin: '0 10px' }}>
                     <NotificationsIcon />
                 </Badge>
             </IconButton>
-            <IconButton size="large" edge="end" color="inherit" onClick={handleProfileMenuOpen}>
+            <IconButton size="large" edge="end" color="inherit" onClick={handleProfileMenuOpen} sx={{ margin: '0 10px' }}>
                 <AccountCircleIcon />
             </IconButton>
             <Menu

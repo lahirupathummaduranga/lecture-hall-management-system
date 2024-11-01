@@ -7,6 +7,7 @@ import Button from '@mui/material/Button'; // Import Material-UI Button
 import TextField from '@mui/material/TextField'; // Import Material-UI TextField
 import Snackbar from '@mui/material/Snackbar'; // Import Snackbar for feedback
 import MuiAlert from '@mui/material/Alert'; // Import Alert component for Snackbar
+import { Typography } from '@mui/material';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -76,8 +77,10 @@ function Lecturer({ userDetails, onLogout }) {
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <NavBar onLogout={onLogout} />
             <ProfileAndDateTime userDetails={userDetails} />
-            <div style={{ padding: '20px' }}>
-                <h1>Welcome, {userDetails.name}</h1>
+            <div style={{ padding: '16px' }} >
+                <Typography variant="h5" sx={{ marginBottom: '16px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold' }}>
+                    Welcome, {userDetails.name}!
+                </Typography>
                 <Scheduled />
 
                 {/* Report Issue Button */}

@@ -81,7 +81,7 @@ function Student({ userDetails, onLogout }) {
     const hour = currentDate.getHours();
     if (hour < 12) {
       return `Good morning, ${userDetails.name}!`;
-    } else if (hour < 18) {
+    } else if (hour < 15) {
       return `Good afternoon, ${userDetails.name}!`;
     } else {
       return `Good evening, ${userDetails.name}!`;
