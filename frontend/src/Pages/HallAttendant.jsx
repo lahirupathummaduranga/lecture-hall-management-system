@@ -16,10 +16,12 @@ import {
     TableRow,
     TableCell,
     TableBody,
+    TableContainer,
+    Paper,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import Mini from '../Components/mini-cal'; // Assuming this is your calendar component
+import Mini from '../Components/mini-cal';
 import axios from 'axios';
 
 const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -56,12 +58,17 @@ function HallAttendant({ userDetails, onLogout }) {
                 const response = await axios.get('http://localhost:3000/api/schedules');
                 const filteredData = response.data?.data
                     ?.filter(schedule => new Date(schedule.date).getDay() === (dayIndex + 1) % 7)
-                    .map(schedule => ({
-                        subjectName: schedule.subjectName,
-                        startTime: schedule.startTime,
-                        endTime: schedule.endTime,
-                        lectureHallId: schedule.lectureHallId?.name || 'N/A',
-                    }));
+                    .map(schedule => {
+                        const isCompleted = new Date(schedule.endTime) < new Date();
+                        return {
+                            subjectName: schedule.subjectName,
+                            startTime: schedule.startTime,
+                            endTime: schedule.endTime,
+                            lectureHallId: schedule.lectureHallId?.name || 'N/A',
+                            scheduleStatus: isCompleted ? 'Completed' : schedule.scheduleStatus,
+                            date: schedule.date,
+                        };
+                    });
                 setSchedules(filteredData);
             } catch (error) {
                 console.error("Error fetching schedule data:", error);
@@ -117,6 +124,21 @@ function HallAttendant({ userDetails, onLogout }) {
         }
     };
 
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'Scheduled':
+                return 'blue';
+            case 'Completed':
+                return 'green';
+            case 'Postponed':
+                return 'orange';
+            case 'Cancelled':
+                return 'red';
+            default:
+                return 'black';
+        }
+    };
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <NavBar onLogout={onLogout} notificationCount={notificationCount} />
@@ -136,25 +158,30 @@ function HallAttendant({ userDetails, onLogout }) {
                         <Button variant="outlined" onClick={handleNextDay} endIcon={<ArrowForwardIcon />} />
                     </Stack>
                     <Mini date={new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())} />
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Subject</TableCell>
-                                <TableCell>Time</TableCell>
-                                <TableCell>Lecture Hall</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {schedules.map((schedule, index) => (
-                                <TableRow key={index}>
-                                    <TableCell>{schedule.subjectName}</TableCell>
-                                    <TableCell>{`${schedule.startTime} - ${schedule.endTime}`}</TableCell>
-                                    <TableCell>{schedule.lectureHallId}</TableCell>
+                    <TableContainer component={Paper} sx={{ marginTop: '16px' }}>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Date</TableCell>
+                                    <TableCell>Subject</TableCell>
+                                    <TableCell>Time</TableCell>
+                                    <TableCell>Lecture Hall</TableCell>
+                                    <TableCell>Status</TableCell>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                    {/* Moved the button to the left corner below the table */}
+                            </TableHead>
+                            <TableBody>
+                                {schedules.map((schedule, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell>{new Date(schedule.date).toLocaleDateString()}</TableCell>
+                                        <TableCell>{schedule.subjectName}</TableCell>
+                                        <TableCell>{`${new Date(schedule.startTime).toLocaleTimeString()} - ${new Date(schedule.endTime).toLocaleTimeString()}`}</TableCell>
+                                        <TableCell>{schedule.lectureHallId}</TableCell>
+                                        <TableCell style={{ color: getStatusColor(schedule.scheduleStatus) }}>{schedule.scheduleStatus}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                     <div style={{ display: 'flex', justifyContent: 'flex-start', padding: '20px' }}>
                         <Button variant="contained" sx={{ backgroundColor: '#90caf9', textTransform: 'none', '&:hover': { backgroundColor: '#42a5f5', transform: 'scale(1.05)' }, transition: 'background-color 0.3s, transform 0.3s' }} onClick={handleViewIssues}>
                             View Issues
@@ -189,7 +216,17 @@ function HallAttendant({ userDetails, onLogout }) {
                                         <TableCell>{issue.issueDescription}</TableCell>
                                         <TableCell>{issue.lectureHall}</TableCell>
                                         <TableCell>
-                                            <Button variant="contained" color="secondary" onClick={() => handleMarkAsComplete(issue._id)}>Complete</Button>
+                                            <Button variant="outlined"  sx={{ 
+        color: 'white', 
+        borderColor: '#42a5f5', 
+        backgroundColor: '#001f3f', // Very dark blue color
+        '&:hover': {
+            backgroundColor: '#003366' // Optional: Change background color on hover
+        }
+    }} 
+ onClick={() => handleMarkAsComplete(issue._id)}>
+                                                Mark as Complete
+                                            </Button>
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -201,7 +238,6 @@ function HallAttendant({ userDetails, onLogout }) {
                     </DialogActions>
                 </Dialog>
             </div>
-
             <Footer />
         </div>
     );
