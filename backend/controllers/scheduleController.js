@@ -1,34 +1,50 @@
 const LectureSchedule = require('../models/scheduleModel');
 const mongoose = require('mongoose');
 
+// Function to check for schedule conflicts
+async function checkScheduleConflict({ date, startTime, endTime, department, lectureHallId, excludeScheduleId = null }) {
+    const startDate = new Date(`${date}T${startTime}`);
+    const endDate = new Date(`${date}T${endTime}`);
+
+    const conflictQuery = {
+        department: department,
+        lectureHallId: lectureHallId,
+        date: new Date(date),
+        _id: { $ne: excludeScheduleId }, // Exclude the current schedule if updating
+        $or: [
+            { startTime: { $lt: endDate }, endTime: { $gt: startDate } }
+        ],
+        scheduleStatus: { $nin: ["Cancelled", "Postponed"] }
+    };
+
+    const existingSchedules = await LectureSchedule.find(conflictQuery);
+    return existingSchedules.length > 0;
+}
+
+// Create a new lecture schedule
 exports.createSchedule = async (req, res) => {
     const { subjectName, date, startTime, endTime, lecturerId, scheduleStatus, batch, department, lectureHallId } = req.body;
 
     try {
-        const startDate = new Date(`${date}T${startTime}`);
-        const endDate = new Date(`${date}T${endTime}`);
-
-        const existingSchedules = await LectureSchedule.find({
-            department: department,
-            batch: batch,
-            scheduleStatus: { $nin: ["Cancelled", "Postponed"] },
-            date: new Date(date),
-            $or: [
-                { startTime: { $lt: endDate }, endTime: { $gt: startDate } }
-            ]
+        const conflict = await checkScheduleConflict({
+            date,
+            startTime,
+            endTime,
+            department,
+            lectureHallId
         });
 
-        if (existingSchedules.length > 0) {
+        if (conflict) {
             return res.status(400).json({
-                message: "Booking Unavailable: The selected lecture hall is already booked at this time by another lecturer. Please choose a different time or lecture hall. "
+                message: "Booking Unavailable: The selected lecture hall is already booked at this time by another lecturer. Please choose a different time or lecture hall."
             });
         }
 
         const newSchedule = new LectureSchedule({
-            subjectName, // New field for subject name
+            subjectName,
             date,
-            startTime: startDate,
-            endTime: endDate,
+            startTime: new Date(`${date}T${startTime}`),
+            endTime: new Date(`${date}T${endTime}`),
             lecturerId,
             scheduleStatus,
             batch,
@@ -50,6 +66,85 @@ exports.createSchedule = async (req, res) => {
     }
 };
 
+// Update an existing lecture schedule
+exports.updateSchedule = async (req, res) => {
+    const { scheduleId } = req.params;
+    const { subjectName, date, startTime, endTime, lecturerId, scheduleStatus, batch, department, lectureHallId } = req.body;
+
+    try {
+        const conflict = await checkScheduleConflict({
+            date,
+            startTime,
+            endTime,
+            department,
+            lectureHallId,
+            excludeScheduleId: scheduleId
+        });
+
+        if (conflict) {
+            return res.status(400).json({
+                message: "Booking Unavailable: The selected lecture hall is already booked at this time by another lecturer. Please choose a different time or lecture hall."
+            });
+        }
+
+        const updateFields = {};
+        if (subjectName) updateFields.subjectName = subjectName;
+        if (date) updateFields.date = new Date(date);
+        if (startTime) updateFields.startTime = new Date(`${date}T${startTime}`);
+        if (endTime) updateFields.endTime = new Date(`${date}T${endTime}`);
+        if (lecturerId) updateFields.lecturerId = lecturerId;
+        if (scheduleStatus) updateFields.scheduleStatus = scheduleStatus;
+        if (batch) updateFields.batch = batch;
+        if (department) updateFields.department = department;
+        if (lectureHallId) updateFields.lectureHallId = lectureHallId;
+
+        const updatedSchedule = await LectureSchedule.findByIdAndUpdate(
+            scheduleId,
+            updateFields,
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedSchedule) {
+            return res.status(404).json({ message: "Lecture schedule not found" });
+        }
+
+        res.status(200).json({
+            message: "Schedule updated successfully",
+            data: updatedSchedule
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to update lecture schedule",
+            error: error.message
+        });
+    }
+};
+
+// Get all schedules
+exports.getAllSchedules = async (req, res) => {
+    try {
+        const schedules = await LectureSchedule.find()
+            .populate('lecturerId', 'name')
+            .populate('batch', 'batch')
+            .populate('department', 'department')
+            .populate('lectureHallId', 'name');
+
+        res.status(200).json({
+            message: "All schedules retrieved successfully",
+            data: schedules.map(schedule => ({
+                ...schedule.toObject(),
+                subjectName: schedule.subjectName // Include subject name in response
+            }))
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to retrieve schedules",
+            error: error.message
+        });
+    }
+};
+
+// Update the schedule status
 exports.updateScheduleStatus = async (req, res) => {
     const { scheduleId, newStatus } = req.body;
 
@@ -70,12 +165,13 @@ exports.updateScheduleStatus = async (req, res) => {
         });
     } catch (error) {
         res.status(500).json({
-            message: "Failed to update lecture schedule",
+            message: "Failed to update schedule status",
             error: error.message
         });
     }
 };
 
+// Get monthly schedule summary
 exports.getMonthlyScheduleSummary = async (req, res) => {
     const { departmentId, batchId } = req.query;
 
@@ -138,67 +234,7 @@ exports.getMonthlyScheduleSummary = async (req, res) => {
     }
 };
 
-exports.getAllSchedules = async (req, res) => {
-    try {
-        const schedules = await LectureSchedule.find()
-            .populate('lecturerId', 'name')
-            .populate('batch', 'batch')
-            .populate('department', 'department')
-            .populate('lectureHallId', 'name');
-
-        res.status(200).json({
-            message: "All schedules retrieved successfully",
-            data: schedules.map(schedule => ({
-                ...schedule.toObject(),
-                subjectName: schedule.subjectName  // Include subject name in response
-            }))
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: "Failed to retrieve schedules",
-            error: error.message
-        });
-    }
-};
-
-exports.updateSchedule = async (req, res) => {
-    const { scheduleId } = req.params;
-    const { subjectName, date, startTime, endTime, lecturerId, scheduleStatus, batch, department, lectureHallId } = req.body;
-
-    try {
-        const updateFields = {};
-        if (subjectName) updateFields.subjectName = subjectName;  // New field for subject name
-        if (date) updateFields.date = new Date(date);
-        if (startTime) updateFields.startTime = new Date(`${date}T${startTime}`);
-        if (endTime) updateFields.endTime = new Date(`${date}T${endTime}`);
-        if (lecturerId) updateFields.lecturerId = lecturerId;
-        if (scheduleStatus) updateFields.scheduleStatus = scheduleStatus;
-        if (batch) updateFields.batch = batch;
-        if (department) updateFields.department = department;
-        if (lectureHallId) updateFields.lectureHallId = lectureHallId;
-
-        const updatedSchedule = await LectureSchedule.findByIdAndUpdate(
-            scheduleId,
-            updateFields,
-            { new: true, runValidators: true }
-        );
-
-        if (!updatedSchedule) {
-            return res.status(404).json({ message: "Lecture schedule not found" });
-        }
-
-        res.status(200).json({
-            message: "Schedule updated successfully",
-            data: updatedSchedule
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: "Failed to update lecture schedule",
-            error: error.message
-        });
-    }
-};
-
+// Delete a lecture schedule
 exports.deleteSchedule = async (req, res) => {
     const { scheduleId } = req.params;
 
