@@ -34,6 +34,7 @@ function Student({ userDetails, onLogout }) {
         const response = await axios.get('http://localhost:3000/api/schedules');
         const filteredData = response.data?.data
           ?.filter(schedule => new Date(schedule.date).getDay() === (selectedDayIndex + 1) % 7)
+          .filter(schedule => schedule.batch._id === userDetails?.roleRef?.batch) // Filter by batch
           .map(schedule => {
             const isCompleted = new Date(schedule.endTime) < new Date();
             return {
@@ -52,7 +53,7 @@ function Student({ userDetails, onLogout }) {
     };
 
     fetchScheduleData();
-  }, [selectedDayIndex]);
+  }, [selectedDayIndex, userDetails?.roleRef?.batch]);
 
   const handleNextDay = () => {
     setSelectedDayIndex((prevIndex) => (prevIndex + 1) % weekdays.length);
@@ -99,6 +100,7 @@ function Student({ userDetails, onLogout }) {
         <Typography variant="h5" sx={{ marginBottom: '16px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold' }}>
           {getGreeting()}
         </Typography>
+        
       </div>
 
       <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-end', padding: '16px', marginTop: 'auto' }}>
