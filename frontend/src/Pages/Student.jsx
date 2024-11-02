@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import Mini from '../Components/mini-cal';
 
-const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 function Student({ userDetails, onLogout }) {
   const currentDate = new Date();
@@ -41,7 +41,7 @@ function Student({ userDetails, onLogout }) {
               startTime: schedule.startTime,
               endTime: schedule.endTime,
               lectureHallId: schedule.lectureHallId?.name || 'N/A',
-              scheduleStatus: isCompleted ? 'Completed' : schedule.scheduleStatus, // Set to Completed if end time passed
+              scheduleStatus: isCompleted ? 'Completed' : schedule.scheduleStatus,
               date: schedule.date,
             };
           });
@@ -88,15 +88,17 @@ function Student({ userDetails, onLogout }) {
     }
   };
 
+  const noLecturesMessage = selectedDayIndex >= 5 ? "No lectures today" : null; // For Saturday and Sunday
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <NavBar onLogout={onLogout} />
       <ProfileAndDateTime userDetails={userDetails} />
 
       <div style={{ padding: '16px' }}>
-      <Typography variant="h5" sx={{ marginBottom: '16px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold' }}>
+        <Typography variant="h5" sx={{ marginBottom: '16px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold' }}>
           {getGreeting()}
-      </Typography>
+        </Typography>
       </div>
 
       <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-end', padding: '16px', marginTop: 'auto' }}>
@@ -116,30 +118,36 @@ function Student({ userDetails, onLogout }) {
             <Button variant="outlined" onClick={handleNextDay} endIcon={<ArrowForward />}></Button>
           </Stack>
 
-          <TableContainer component={Paper} sx={{ marginTop: '16px' }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Date</TableCell>
-                  <TableCell>Subject</TableCell>
-                  <TableCell>Time</TableCell>
-                  <TableCell>Venue</TableCell>
-                  <TableCell>Status</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {subjects.map((subject, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{new Date(subject.date).toLocaleDateString()}</TableCell>
-                    <TableCell>{subject.subjectName}</TableCell>
-                    <TableCell>{`${new Date(subject.startTime).toLocaleTimeString()} - ${new Date(subject.endTime).toLocaleTimeString()}`}</TableCell>
-                    <TableCell>{subject.lectureHallId}</TableCell>
-                    <TableCell style={{ color: getStatusColor(subject.scheduleStatus) }}>{subject.scheduleStatus}</TableCell>
+          {noLecturesMessage ? (
+            <Typography variant="h6" color="textSecondary" sx={{ marginTop: '16px', textAlign: 'center' }}>
+              {noLecturesMessage}
+            </Typography>
+          ) : (
+            <TableContainer component={Paper} sx={{ marginTop: '16px' }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Date</TableCell>
+                    <TableCell>Subject</TableCell>
+                    <TableCell>Time</TableCell>
+                    <TableCell>Venue</TableCell>
+                    <TableCell>Status</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {subjects.map((subject, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{new Date(subject.date).toLocaleDateString()}</TableCell>
+                      <TableCell>{subject.subjectName}</TableCell>
+                      <TableCell>{`${new Date(subject.startTime).toLocaleTimeString()} - ${new Date(subject.endTime).toLocaleTimeString()}`}</TableCell>
+                      <TableCell>{subject.lectureHallId}</TableCell>
+                      <TableCell style={{ color: getStatusColor(subject.scheduleStatus) }}>{subject.scheduleStatus}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
         </Box>
       </div>
 

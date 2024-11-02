@@ -24,7 +24,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Mini from '../Components/mini-cal';
 import axios from 'axios';
 
-const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 function HallAttendant({ userDetails, onLogout }) {
     const [openDialog, setOpenDialog] = useState(false);
@@ -55,21 +55,29 @@ function HallAttendant({ userDetails, onLogout }) {
     useEffect(() => {
         const fetchScheduleData = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/api/schedules');
-                const filteredData = response.data?.data
-                    ?.filter(schedule => new Date(schedule.date).getDay() === (dayIndex + 1) % 7)
-                    .map(schedule => {
-                        const isCompleted = new Date(schedule.endTime) < new Date();
-                        return {
-                            subjectName: schedule.subjectName,
-                            startTime: schedule.startTime,
-                            endTime: schedule.endTime,
-                            lectureHallId: schedule.lectureHallId?.name || 'N/A',
-                            scheduleStatus: isCompleted ? 'Completed' : schedule.scheduleStatus,
-                            date: schedule.date,
-                        };
-                    });
-                setSchedules(filteredData);
+                if (dayIndex >= 5) { // Saturday or Sunday
+                    setSchedules([]);
+                } else {
+                    const response = await axios.get('http://localhost:3000/api/schedules');
+                    const filteredData = response.data?.data
+                        ?.filter(schedule => new Date(schedule.date).getDay() === (dayIndex + 1) % 7)
+                        .map(schedule => {
+                            const isCompleted = new Date(schedule.endTime) < new Date();
+                            return {
+                                subjectName: schedule.subjectName,
+                                startTime: schedule.startTime,
+                                endTime: schedule.endTime,
+                                lectureHallId: schedule.lectureHallId?.name || 'N/A',
+                                scheduleStatus: isCompleted ? 'Completed' : schedule.scheduleStatus,
+                                date: schedule.date,
+                            };
+                        });
+
+                    // Sort by start time
+                    filteredData.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+
+                    setSchedules(filteredData);
+                }
             } catch (error) {
                 console.error("Error fetching schedule data:", error);
             }
@@ -159,28 +167,34 @@ function HallAttendant({ userDetails, onLogout }) {
                     </Stack>
                     <Mini date={new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())} />
                     <TableContainer component={Paper} sx={{ marginTop: '16px' }}>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Date</TableCell>
-                                    <TableCell>Subject</TableCell>
-                                    <TableCell>Time</TableCell>
-                                    <TableCell>Lecture Hall</TableCell>
-                                    <TableCell>Status</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {schedules.map((schedule, index) => (
-                                    <TableRow key={index}>
-                                        <TableCell>{new Date(schedule.date).toLocaleDateString()}</TableCell>
-                                        <TableCell>{schedule.subjectName}</TableCell>
-                                        <TableCell>{`${new Date(schedule.startTime).toLocaleTimeString()} - ${new Date(schedule.endTime).toLocaleTimeString()}`}</TableCell>
-                                        <TableCell>{schedule.lectureHallId}</TableCell>
-                                        <TableCell style={{ color: getStatusColor(schedule.scheduleStatus) }}>{schedule.scheduleStatus}</TableCell>
+                        {dayIndex >= 5 ? (
+                            <Typography variant="h6" sx={{ padding: '16px', color: 'gray', textAlign: 'center' }}>
+                                No lectures today
+                            </Typography>
+                        ) : (
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Date</TableCell>
+                                        <TableCell>Subject</TableCell>
+                                        <TableCell>Time</TableCell>
+                                        <TableCell>Lecture Hall</TableCell>
+                                        <TableCell>Status</TableCell>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                                </TableHead>
+                                <TableBody>
+                                    {schedules.map((schedule, index) => (
+                                        <TableRow key={index}>
+                                            <TableCell>{new Date(schedule.date).toLocaleDateString()}</TableCell>
+                                            <TableCell>{schedule.subjectName}</TableCell>
+                                            <TableCell>{`${new Date(schedule.startTime).toLocaleTimeString()} - ${new Date(schedule.endTime).toLocaleTimeString()}`}</TableCell>
+                                            <TableCell>{schedule.lectureHallId}</TableCell>
+                                            <TableCell style={{ color: getStatusColor(schedule.scheduleStatus) }}>{schedule.scheduleStatus}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        )}
                     </TableContainer>
                     <div style={{ display: 'flex', justifyContent: 'flex-start', padding: '20px' }}>
                         <Button variant="contained" sx={{ backgroundColor: '#90caf9', textTransform: 'none', '&:hover': { backgroundColor: '#42a5f5', transform: 'scale(1.05)' }, transition: 'background-color 0.3s, transform 0.3s' }} onClick={handleViewIssues}>
@@ -216,15 +230,7 @@ function HallAttendant({ userDetails, onLogout }) {
                                         <TableCell>{issue.issueDescription}</TableCell>
                                         <TableCell>{issue.lectureHall}</TableCell>
                                         <TableCell>
-                                            <Button variant="outlined"  sx={{ 
-        color: 'white', 
-        borderColor: '#42a5f5', 
-        backgroundColor: '#001f3f', // Very dark blue color
-        '&:hover': {
-            backgroundColor: '#003366' // Optional: Change background color on hover
-        }
-    }} 
- onClick={() => handleMarkAsComplete(issue._id)}>
+                                            <Button variant="outlined" sx={{ color: 'white', borderColor: '#42a5f5', backgroundColor: '#001f3f', '&:hover': { backgroundColor: '#003366' } }} onClick={() => handleMarkAsComplete(issue._id)}>
                                                 Mark as Complete
                                             </Button>
                                         </TableCell>
