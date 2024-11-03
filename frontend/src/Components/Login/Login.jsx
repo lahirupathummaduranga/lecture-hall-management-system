@@ -17,7 +17,7 @@ import {
   DialogActions
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import BackgroundImage from '../../assets/backgroud.png'; // Replace with your background image
+import BackgroundImage from '../../assets/backgroud.png';
 import logo from '../../assets/logo.png';
 
 const Login = ({ onLoginSuccess }) => {
@@ -28,6 +28,7 @@ const Login = ({ onLoginSuccess }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [privacyPolicyOpen, setPrivacyPolicyOpen] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -62,6 +63,8 @@ const Login = ({ onLoginSuccess }) => {
   const handleSnackbarClose = () => setSnackbarOpen(false);
   const handleDialogOpen = () => setDialogOpen(true);
   const handleDialogClose = () => setDialogOpen(false);
+  const handlePrivacyPolicyOpen = () => setPrivacyPolicyOpen(true);
+  const handlePrivacyPolicyClose = () => setPrivacyPolicyOpen(false);
 
   return (
     <Box
@@ -81,7 +84,7 @@ const Login = ({ onLoginSuccess }) => {
           backgroundImage: `url(${BackgroundImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          filter: 'blur(8px)',
+          filter: 'blur(2px)',
           zIndex: -1,
           backgroundColor: 'rgba(0, 0, 0, 0.4)',
         }}
@@ -97,36 +100,36 @@ const Login = ({ onLoginSuccess }) => {
           xs={12}
           sm={10}
           md={7}
-          lg={5}
+          lg={4}
           component={Paper}
           elevation={12}
           sx={{
-            padding: 5,
-            borderRadius: '20px',
+            padding: 4,
+            borderRadius: '25px',
             backgroundColor: 'rgba(255, 255, 255, 0.95)',
             boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)',
           }}
         >
           <Typography
-            variant="h3"
+            variant="h4"
             sx={{
               fontWeight: 700,
               textAlign: 'center',
               mb: 3,
-              color: '#1a1a2e',
+              color: '#091057',
               fontFamily: 'Roboto, sans-serif',
             }}
           >
             Lecture Hall Management System
           </Typography>
           <Box textAlign="center" mb={3}>
-            <img src={logo} alt="Logo" style={{ width: '90px', marginBottom: '15px' }} />
+            <img src={logo} alt="Logo" style={{ width: '100px', marginBottom: '15px' }} />
             <Typography
-              variant="h5"
+              variant="h3"
               sx={{
                 fontWeight: 500,
                 color: '#1a1a2e',
-                fontSize: '1.1rem',
+                fontSize: '1.15rem',
               }}
             >
               Sign In To Your Account
@@ -184,9 +187,9 @@ const Login = ({ onLoginSuccess }) => {
               sx={{
                 mt: 3,
                 mb: 2,
-                backgroundColor: '#1a1a2e',
+                backgroundColor: '#102C57',
                 color: '#fff',
-                '&:hover': { backgroundColor: '#16213e' },
+                '&:hover': { backgroundColor: '#1F3F79' },
                 textTransform: 'uppercase',
                 borderRadius: '25px',
                 padding: '14px 0',
@@ -194,7 +197,7 @@ const Login = ({ onLoginSuccess }) => {
                 fontSize: '1rem',
               }}
             >
-              {loading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'Log In'}
+              {loading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'LogIn'}
             </Button>
             <Grid container justifyContent="space-between">
               <Grid item>
@@ -203,7 +206,7 @@ const Login = ({ onLoginSuccess }) => {
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2" sx={{ color: '#1a1a2e', fontSize: '0.9rem' }}>
+                <Link href="#" variant="body2" onClick={handlePrivacyPolicyOpen}sx={{ color: '#1a1a2e', fontSize: '0.9rem' }}>
                 Privecy Policy
                 </Link>
               </Grid>
@@ -223,6 +226,28 @@ const Login = ({ onLoginSuccess }) => {
           </DialogActions>
         </Dialog>
 
+        <Dialog open={privacyPolicyOpen} onClose={handlePrivacyPolicyClose}>
+          <DialogContent>
+            <Typography variant="h6" sx={{ mb: 2, fontSize: '1.5rem'}}>
+              Privacy Policy
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 2 }}>
+            1. This privacy policy explains how we collect, use, and protect your personal information when using our Lecture Hall Management System.<br/><br/>
+            2. We collect personal information such as email addresses and passwords necessary for account creation and authentication.<br/><br/>
+            3. Your data is used to provide and improve the service, manage user accounts, and communicate with users regarding system updates and support.<br/><br/>
+            4. We implement security measures to protect your data from unauthorized access, alteration, or disclosure.<br/><br/>
+            5. We do not share your personal information with third parties except as required by law or to provide the service.<br/><br/>
+            6. You have the right to access, correct, or delete your personal data. Please contact us if you wish to exercise these rights.<br/><br/>
+            7. We may update this policy from time to time. We will notify you of any significant changes.<br/><br/>
+            8. If you have any questions about this privacy policy, please contact us at [contact@example.com].<br/><br/>
+            Thank you for using our system..!
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handlePrivacyPolicyClose} sx={{ color: '#1a1a2e' }}>Close</Button>
+          </DialogActions>
+        </Dialog>
+
         <Snackbar
           open={snackbarOpen}
           autoHideDuration={6000}
@@ -236,3 +261,6 @@ const Login = ({ onLoginSuccess }) => {
 };
 
 export default Login;
+
+
+
