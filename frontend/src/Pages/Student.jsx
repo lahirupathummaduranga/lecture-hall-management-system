@@ -89,7 +89,8 @@ function Student({ userDetails, onLogout }) {
     }
   };
 
-  const noLecturesMessage = selectedDayIndex >= 5 ? "No lectures today" : null;
+  // Determine if there are no lectures
+  const noLecturesMessage = subjects.length === 0 ? "No lectures today" : null;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -111,8 +112,8 @@ function Student({ userDetails, onLogout }) {
             width: '100%',
             maxWidth: '800px',
             backgroundColor: '#f9f9f9',
-            height: '400px', // Set a fixed height
-            overflowY: 'auto' // Add vertical scroll if content exceeds fixed height
+            height: '400px',
+            overflowY: 'auto'
           }}
         >
           <Stack direction="row" justifyContent="space-between" alignItems="center">

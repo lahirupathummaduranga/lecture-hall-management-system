@@ -55,29 +55,25 @@ function HallAttendant({ userDetails, onLogout }) {
     useEffect(() => {
         const fetchScheduleData = async () => {
             try {
-                if (dayIndex >= 5) { // Saturday or Sunday
-                    setSchedules([]);
-                } else {
-                    const response = await axios.get('http://localhost:3000/api/schedules');
-                    const filteredData = response.data?.data
-                        ?.filter(schedule => new Date(schedule.date).getDay() === (dayIndex + 1) % 7)
-                        .map(schedule => {
-                            const isCompleted = new Date(schedule.endTime) < new Date();
-                            return {
-                                subjectName: schedule.subjectName,
-                                startTime: schedule.startTime,
-                                endTime: schedule.endTime,
-                                lectureHallId: schedule.lectureHallId?.name || 'N/A',
-                                scheduleStatus: isCompleted ? 'Completed' : schedule.scheduleStatus,
-                                date: schedule.date,
-                            };
-                        });
+                const response = await axios.get('http://localhost:3000/api/schedules');
+                const filteredData = response.data?.data
+                    ?.filter(schedule => new Date(schedule.date).getDay() === (dayIndex + 1) % 7)
+                    .map(schedule => {
+                        const isCompleted = new Date(schedule.endTime) < new Date();
+                        return {
+                            subjectName: schedule.subjectName,
+                            startTime: schedule.startTime,
+                            endTime: schedule.endTime,
+                            lectureHallId: schedule.lectureHallId?.name || 'N/A',
+                            scheduleStatus: isCompleted ? 'Completed' : schedule.scheduleStatus,
+                            date: schedule.date,
+                        };
+                    });
 
-                    // Sort by start time
-                    filteredData.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+                // Sort by start time
+                filteredData.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
 
-                    setSchedules(filteredData);
-                }
+                setSchedules(filteredData);
             } catch (error) {
                 console.error("Error fetching schedule data:", error);
             }
@@ -167,7 +163,7 @@ function HallAttendant({ userDetails, onLogout }) {
                     </Stack>
                     <Mini date={new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())} />
                     <TableContainer component={Paper} sx={{ marginTop: '16px' }}>
-                        {dayIndex >= 5 ? (
+                        {schedules.length === 0 ? (
                             <Typography variant="h6" sx={{ padding: '16px', color: 'gray', textAlign: 'center' }}>
                                 No lectures today
                             </Typography>
@@ -230,7 +226,7 @@ function HallAttendant({ userDetails, onLogout }) {
                                         <TableCell>{issue.issueDescription}</TableCell>
                                         <TableCell>{issue.lectureHall}</TableCell>
                                         <TableCell>
-                                            <Button variant="outlined" sx={{ color: 'white', borderColor: '#42a5f5', backgroundColor: '#001f3f', '&:hover': { backgroundColor: '#003366' } }} onClick={() => handleMarkAsComplete(issue._id)}>
+                                        <Button variant="outlined" sx={{ color: 'white', borderColor: '#42a5f5', backgroundColor: '#001f3f', '&:hover': { backgroundColor: '#003366' } }} onClick={() => handleMarkAsComplete(issue._id)}>
                                                 Mark as Complete
                                             </Button>
                                         </TableCell>
@@ -244,6 +240,7 @@ function HallAttendant({ userDetails, onLogout }) {
                     </DialogActions>
                 </Dialog>
             </div>
+
             <Footer />
         </div>
     );
