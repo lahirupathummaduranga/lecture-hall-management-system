@@ -23,7 +23,7 @@ const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Satur
 
 function Student({ userDetails, onLogout }) {
   const currentDate = new Date();
-  const currentDayIndex = (currentDate.getDay() + 6) % 7; // Adjust for Monday start
+  const currentDayIndex = (currentDate.getDay() + 6) % 7;
 
   const [selectedDayIndex, setSelectedDayIndex] = useState(currentDayIndex);
   const [subjects, setSubjects] = useState([]);
@@ -34,7 +34,7 @@ function Student({ userDetails, onLogout }) {
         const response = await axios.get('http://localhost:3000/api/schedules');
         const filteredData = response.data?.data
           ?.filter(schedule => new Date(schedule.date).getDay() === (selectedDayIndex + 1) % 7)
-          .filter(schedule => schedule.batch._id === userDetails?.roleRef?.batch) // Filter by batch
+          .filter(schedule => schedule.batch._id === userDetails?.roleRef?.batch)
           .map(schedule => {
             const isCompleted = new Date(schedule.endTime) < new Date();
             return {
@@ -89,7 +89,7 @@ function Student({ userDetails, onLogout }) {
     }
   };
 
-  const noLecturesMessage = selectedDayIndex >= 5 ? "No lectures today" : null; // For Saturday and Sunday
+  const noLecturesMessage = selectedDayIndex >= 5 ? "No lectures today" : null;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -100,7 +100,6 @@ function Student({ userDetails, onLogout }) {
         <Typography variant="h5" sx={{ marginBottom: '16px', fontFamily: 'Arial, sans-serif', fontWeight: 'bold' }}>
           {getGreeting()}
         </Typography>
-        
       </div>
 
       <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-end', padding: '16px', marginTop: 'auto' }}>
@@ -112,6 +111,8 @@ function Student({ userDetails, onLogout }) {
             width: '100%',
             maxWidth: '800px',
             backgroundColor: '#f9f9f9',
+            height: '400px', // Set a fixed height
+            overflowY: 'auto' // Add vertical scroll if content exceeds fixed height
           }}
         >
           <Stack direction="row" justifyContent="space-between" alignItems="center">
