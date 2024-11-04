@@ -364,7 +364,7 @@ const Schedule = () => {
                 </DialogContent>
                 <DialogActions>
                     {selectedEvent && (
-                        <Button onClick={handleDelete} color="error" disabled={isCancelled}>
+                        <Button onClick={handleDelete} color="error" >
                             Delete
                         </Button>               
                     )}
